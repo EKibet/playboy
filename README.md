@@ -12,23 +12,23 @@ The api provides features for registering users(students and TMs) and viewing at
 ## Development set up
 
 
--   Check that python 3 is installed:
+-   Check that python 3.7.x is installed:
 
     ```
     python --version
-    >> Python 3.6.5
+    >> Python 3.7.x
     ```
 
 -   Install pipenv:
 
     ```
-    pip install pipenv
+    pip3 install pipenv
     ```
 
 -   Check pipenv is installed:
     ```
     pipenv --version
-    >> pipenv, version 2018.6.25
+    >> pipenv, version 2018.11.26
     ```
 -   Check that postgres is installed:
 
@@ -36,13 +36,39 @@ The api provides features for registering users(students and TMs) and viewing at
     postgres --version
     >> postgres (PostgreSQL) 10.1
     ```
+-  Database
+    * Swith to postgres account (in terminal)
+        ```
+        sudo su - postgres
+        ```
+    * Run PostgreSQL command line client.
+        ```
+        psql
+        ```
+    * Create a database user with a password.
+        ```
+        CREATE USER mat_owner with password 'password12345';
+        ```
+    * Create a database instance.
+        ```
+        CREATE DATABASE mat_db owner mat_owner encoding 'utf-8';
+        ```  
 
 - Clone the mat-api repo and cd into it
     ```
     git clone https://gitlab.com/Moringa-School/mat-api.git
     ```
+- Create  virtual environment
+    ```
+    pipenv --python 3.7
 
-- spawn a shell in a virtual environment
+    ```
+- Turn off a virtual environment  
+    ```
+    exit
+    ```
+
+- Spawn a shell in a virtual environment
     ```
     pipenv shell
     ```
@@ -50,12 +76,17 @@ The api provides features for registering users(students and TMs) and viewing at
     ```
    pipenv install 
     ```
-- Create Application environment variables and save them in .env file
+- Create Application environment variables and save them in .env file 
     ```
     DJANGO_READ_DOT_ENV_FILE=True
     DJANGO_DEBUG=True
-    DATABASE_URL='url_here'
+    DATABASE_URL='postgresql://localhost/mat_db?user=mat_owner&password=password12345'
     SECRET_KEY='super_secret'
+    ```
+
+- Add the variables in the .env file to path
+    ```
+    source .env
     ```
 - Running migrations
 
