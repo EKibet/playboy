@@ -16,3 +16,13 @@ class StudentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Students
         fields = '__all__'
+
+
+class StudentListSerializer(serializers.ModelSerializer):
+    """
+    The serializer for students data
+    """
+    class Meta:
+        model = Students
+        # fields = '__all__'
+        exclude = ('password', )

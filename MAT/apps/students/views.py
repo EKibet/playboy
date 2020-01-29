@@ -9,7 +9,8 @@ from rest_framework.views import APIView
 from MAT.apps.authentication.models import User
 
 from .models import Cohort, Students
-from .serializers import CohortSerializer, StudentSerializer
+from .serializers import (CohortSerializer, StudentListSerializer,
+                          StudentSerializer)
 
 
 class StudentInfoUploadView(APIView):
@@ -61,3 +62,11 @@ class CohortCreateView(APIView):
             print(status.HTTP_200_OK)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class StudentListAPIView(generics.ListAPIView):
+    """
+    An api view for returning the students list using the serializer
+    """
+    queryset = Students.objects.all()
+    serializer_class = StudentListSerializer
