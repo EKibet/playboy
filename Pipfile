@@ -17,6 +17,7 @@ pytest-django = "*"
 pytest-cov = "*"
 drf-yasg = "*"
 pillow = "*"
+pyjwt = "*"
 
 [requires]
 python_version = "3.7"

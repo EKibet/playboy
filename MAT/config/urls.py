@@ -44,7 +44,5 @@ urlpatterns = [
     url(r'^swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     url(r'^redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
     path('api/students/', include('MAT.apps.students.urls',namespace='students')),
-
-    path(r'', include('MAT.apps.staff.urls'))
-
+    path('api/', include('MAT.apps.staff.urls', namespace='staff')),
 ]

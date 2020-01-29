@@ -13,6 +13,14 @@ def new_user():
     }
     return User(**params)
 
+@pytest.fixture(scope='module')
+def new_user2():
+    params = {
+        "username": "ken",
+        "email": "ken@gmail.com",
+        "password": "ken"
+    }
+    return User(**params)
 
 @pytest.fixture(scope='function')
 def new_user_with_profile(django_db_blocker, new_user):
