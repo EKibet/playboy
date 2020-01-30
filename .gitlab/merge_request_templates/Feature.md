@@ -14,7 +14,7 @@ xxx
 
 xxx
 
-**What are the relevant pivotal tracker stories?**
+**What are the relevant Asana stories?**
 
 xxx
 

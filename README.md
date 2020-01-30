@@ -104,9 +104,17 @@ The api provides features for registering users(students and TMs) and viewing at
     make serve
     ```
 
-- Running Tests
+- Running tests and generating report
 
- [TODO]
+    On command line run:
+
+    ```
+    pytest
+    ```
+
+    To further view the lines not tested or covered if there is any,
+
+    A `htmlcov` directory will be created, get the `index.html` file by entering the directory and view it in your browser.
 
 
 ### Merge Request Process

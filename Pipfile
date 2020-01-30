@@ -12,6 +12,8 @@ django = "*"
 djangorestframework = "*"
 django-environ = "*"
 psycopg2-binary = "*"
+pytest-django = "*"
+pytest-cov = "*"
 
 [requires]
 python_version = "3.7"
