@@ -48,11 +48,12 @@ DJANGO_APPS = (
 
 THIRD_PARTY_APPS = (
     'rest_framework',
-    'rest_framework_swagger',
+    'drf_yasg',
 )
 
 LOCAL_APPS = (
     'MAT.apps.authentication',
+    'MAT.apps.profiles'
 )
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -135,16 +136,3 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 AUTH_USER_MODEL = 'authentication.User'
-
-SWAGGER_SETTINGS = {
-    'SHOW_REQUEST_HEADERS': True,
-    'USE_SESSION_AUTH': False,
-    'DOC_EXPANSION': 'list',
-    'SECURITY_DEFINITIONS': {
-        'api_key': {
-            'type': 'apiKey',
-            'in': 'header',
-            'name': 'Authorization'
-        }
-    }
-}

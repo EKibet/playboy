@@ -10,5 +10,7 @@ def client():
     :param app: Pytest fixture
     :return: Django rest framework API client
     """
+
     from rest_framework.test import APIClient
-    return APIClient
+    return APIClient()
+
