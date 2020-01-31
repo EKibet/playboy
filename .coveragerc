@@ -1,8 +1,9 @@
 [run]
-omit = 
+omit =
     */config/*
     */migrations/*
     */apps.py
     */fixtures/*
     *tests/*
     */__init__.py
+
