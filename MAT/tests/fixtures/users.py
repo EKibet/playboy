@@ -1,8 +1,8 @@
 import pytest
 
 # Models
-from MAT.apps.profiles.models import User
-from MAT.apps.profiles.models import UserProfile
+from MAT.apps.profiles.models import User, UserProfile
+
 
 @pytest.fixture(scope='module')
 def new_user():
@@ -26,4 +26,3 @@ def new_user_with_profile(django_db_blocker, new_user):
             "user": new_user
         }
         return UserProfile(**params)
-
