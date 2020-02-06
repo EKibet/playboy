@@ -53,7 +53,8 @@ THIRD_PARTY_APPS = (
 
 LOCAL_APPS = (
     'MAT.apps.authentication',
-    'MAT.apps.profiles'
+    'MAT.apps.profiles',
+    'MAT.apps.students'
 )
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
