@@ -1,7 +1,10 @@
 import pytest
 import rest_framework
 
-pytest_plugins = ("MAT.tests.fixtures.users","MAT.tests.fixtures.cohort_and_students","MAT.tests.fixtures.staff",)
+pytest_plugins = ("MAT.tests.fixtures.users",
+                  "MAT.tests.fixtures.cohort_and_students",
+                  "MAT.tests.fixtures.staff", "MAT.tests.fixtures.students_list",)
+
 
 @pytest.fixture(scope='function')
 def client():
@@ -13,4 +16,3 @@ def client():
 
     from rest_framework.test import APIClient
     return APIClient()
-
