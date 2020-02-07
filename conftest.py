@@ -1,7 +1,7 @@
 import pytest
 import rest_framework
 
-pytest_plugins = ("MAT.tests.fixtures.users","MAT.tests.fixtures.cohort_and_students",)
+pytest_plugins = ("MAT.tests.fixtures.users","MAT.tests.fixtures.cohort_and_students","MAT.tests.fixtures.staff",)
 
 @pytest.fixture(scope='function')
 def client():

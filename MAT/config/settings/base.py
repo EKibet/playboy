@@ -54,7 +54,9 @@ THIRD_PARTY_APPS = (
 LOCAL_APPS = (
     'MAT.apps.authentication',
     'MAT.apps.profiles',
-    'MAT.apps.students'
+    'MAT.apps.students',
+    'MAT.apps.staff',
+
 )
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -137,3 +139,8 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 AUTH_USER_MODEL = 'authentication.User'
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 1
+}
