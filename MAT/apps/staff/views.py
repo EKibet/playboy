@@ -1,16 +1,18 @@
-from django.shortcuts import render
-from .models import Staff
-from django.contrib.auth.models import User
-from .serializer import StaffListSerializer
-from rest_framework import generics, status
-# from rest_framework.permissions import IsAdminUser
+import os
+from datetime import datetime, timedelta
+
+import jwt
 from django.core.mail import send_mail
+from django.shortcuts import render
+from rest_framework import generics, status
 from rest_framework.response import Response
+
 from MAT.apps.authentication.models import User
 from MAT.apps.common.utility import send_link
-from datetime import datetime, timedelta
-import jwt
-import os
+
+from .renderers import StaffJSONRenderer
+from .serializer import StaffListSerializer
+
 
 class SendEmails(generics.CreateAPIView):
 
@@ -42,6 +44,6 @@ class SendEmails(generics.CreateAPIView):
         return Response(message, status=status.HTTP_200_OK)
 
 class StaffListing(generics.ListAPIView):
-    queryset = Staff.objects.all()
+    queryset = User.objects.filter(is_staff=True)
     serializer_class = StaffListSerializer
-    # permission_classes = [IsAdminUser]
+    renderer_classes = (StaffJSONRenderer,)

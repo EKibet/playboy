@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import (ProfileListView,ProfileDetail)
+from .views import ProfileDetail, ProfileListView
 
 """
 Django 2.0 requires the app_name variable set when using include namespace

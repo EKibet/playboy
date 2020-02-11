@@ -1,8 +1,11 @@
 import os
+
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
-from MAT.config.settings.base import EMAIL_HOST_USER
 from rest_framework.response import Response
+
+from MAT.config.settings.base import EMAIL_HOST_USER
+
 
 def send_link(email, subject, template, url, *args):
     """A utility to send emails that is reusable"""

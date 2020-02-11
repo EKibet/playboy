@@ -63,4 +63,4 @@ class TestSendEmails():
         response = client.post(url, data=json.dumps(post_data), content_type='application/json')
         assert response.status_code == status.HTTP_404_NOT_FOUND
         assert response.data['message'] == 'There were no emails sent. Confirm that the right emails were input.'
-        assert (len(mail.outbox), 0)
+        assert len(mail.outbox) == 0

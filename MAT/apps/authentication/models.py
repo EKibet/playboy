@@ -1,11 +1,13 @@
 import jwt
 
 from datetime import datetime, timedelta
+
 from django.conf import settings
 from django.contrib.auth.models import (
-    AbstractBaseUser, BaseUserManager, PermissionsMixin
-)
+    AbstractBaseUser, BaseUserManager, PermissionsMixin)
 from django.db import models
+
+from MAT.apps.common.base import CommonFieldsMixin
 
 
 class UserManager(BaseUserManager):
@@ -17,16 +19,42 @@ class UserManager(BaseUserManager):
     to create `User` objects.
     """
 
-    def create_user(self, username, email, password=None):
+    def create_student(self, username, email, password=None, **kwargs):
         """Create and return a `User` with an email, username and password."""
+        first_name = kwargs.get('first_name')
+        last_name = kwargs.get('last_name')
+        if first_name is None:
+            raise TypeError('Students must have a first name.')
+        if kwargs.get('last_name') is None:
+            raise TypeError('Students must have a last name.')
+
+        if username is None:
+            raise TypeError('Students must have a username.')
+
+        if email is None:
+            raise TypeError('Students must have an email address.')
+
+        user = self.model(
+            username=username, email=self.normalize_email(email),first_name=first_name, last_name=last_name)
+        user.set_password(password)
+        user.is_student = True
+        user.save()
+
+        return user
+
+    def create_staff(self, username, email, password=None, **kwargs):
+        """Create and return a `User` with staff privileges eg a TM."""
+
         if username is None:
             raise TypeError('Users must have a username.')
 
         if email is None:
             raise TypeError('Users must have an email address.')
 
-        user = self.model(username=username, email=self.normalize_email(email))
+        user = self.model(
+            username=username, email=self.normalize_email(email))
         user.set_password(password)
+        user.is_staff = True
         user.save()
 
         return user
@@ -39,32 +67,28 @@ class UserManager(BaseUserManager):
         """
         if password is None:
             raise TypeError('Superusers must have a password.')
-        user = self.create_user(username, email, password)
+        user = self.create_staff(username, email, password)
         user.is_superuser = True
         user.is_staff = True
         user.save()
         return user
 
+    def get_queryset(self):
+        return super(UserManager, self).get_queryset().filter(deleted=False)
 
-class User(AbstractBaseUser, PermissionsMixin):
+class User(AbstractBaseUser, CommonFieldsMixin, PermissionsMixin):
+    first_name = models.CharField(max_length=150, default='First')
+    last_name = models.CharField(max_length=150, default='Last')
     # Each `User` needs a human-readable unique identifier that we can use to
     # represent the `User` in the UI. We want to index this column in the
     # database to improve lookup performance.
-    username = models.CharField(db_index=True, max_length=255, unique=True, default="")
+    username = models.CharField(db_index=True, max_length=50, null=True)
 
     # We also need a way to contact the user and a way for the user to identify
     # themselves when logging in. Since we need an email address for contacting
     # the user anyways, we will also use the email for logging in because it is
     # the most common form of login credential at the time of writing.
-    email = models.EmailField(db_index=True, unique=True, default="")
-
-    # When a user no longer wishes to use our platform, they may try to delete
-    # there account. That's a problem for us because the data we collect is
-    # valuable to us and we don't want to delete it. To solve this problem, we
-    # will simply offer users a way to deactivate their account instead of
-    # letting them delete it. That way they won't show up on the site anymore,
-    # but we can still analyze the data.
-    is_active = models.BooleanField(default=True, )
+    email = models.EmailField(db_index=True, unique=True, null=False)
 
     # when a user is registered their account is not yet verified hence we 
     #offer a way for the user to verify their account 
@@ -78,11 +102,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     # The `is_student` flag is used to check if a student is logged in
     is_student = models.BooleanField(default=False,)
 
-    # A timestamp representing when this object was created.
-    created_at = models.DateTimeField(auto_now_add=True,)
-
-    # A timestamp reprensenting when this object was last updated.
-    updated_at = models.DateTimeField(auto_now=True,)
 
     # The `USERNAME_FIELD` property tells us which field we will use to log in.
     # In this case, we want that to be the email field.
@@ -107,7 +126,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         Typically, this would be the user's first and last name. Since we do
         not store the user's real name, we return their username instead.
         """
-        return self.username
+        return self.first_name  + self.last_name
 
     def get_short_name(self):
         """
@@ -115,6 +134,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         Typically, this would be the user's first name. Since we do not store
         the user's real name, we return their username instead.
         """
-        return self.username
+        return self.first_name
 
-   
+    class Meta:
+        ordering = ['-updated_at', '-created_at']
