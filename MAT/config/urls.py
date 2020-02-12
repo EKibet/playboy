@@ -39,7 +39,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/profiles/', include('MAT.apps.profiles.urls',
                                   namespace='profiles')),
-
+    path('', include('MAT.apps.authentication.urls')),
     url(r'^swagger(?P<format>\.json|\.yaml)$',
         schema_view.without_ui(cache_timeout=0), name='schema-json'),
     url(r'^swagger/$', schema_view.with_ui('swagger',
@@ -49,5 +49,4 @@ urlpatterns = [
     path('api/students/', include('MAT.apps.students.urls', namespace='students')),
 
     path(r'', include('MAT.apps.staff.urls'))
-
 ]

@@ -1,3 +1,5 @@
+import jwt
+
 from datetime import datetime, timedelta
 from django.conf import settings
 from django.contrib.auth.models import (
@@ -114,3 +116,5 @@ class User(AbstractBaseUser, PermissionsMixin):
         the user's real name, we return their username instead.
         """
         return self.username
+
+   
