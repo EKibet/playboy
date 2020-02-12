@@ -18,6 +18,8 @@ pytest-cov = "*"
 drf-yasg = "*"
 pillow = "*"
 pyjwt = "*"
+djangorestframework-simplejwt = "*"
+
 
 [requires]
 python_version = "3.7"

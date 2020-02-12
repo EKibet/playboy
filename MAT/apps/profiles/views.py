@@ -12,7 +12,6 @@ from .renderers import (ProfileJSONRenderer, ProfilesJSONRenderer)
 
 
 class ProfileListView(ListAPIView):
-    # permission_classes = (IsAuthenticated,)
     serializer_class = ProfileSerializer
     renderer_classes = (ProfilesJSONRenderer,)
 
@@ -22,7 +21,6 @@ class ProfileListView(ListAPIView):
 
 
 class ProfileDetail(APIView):
-    # permission_classes = (IsAuthenticated,)
     serializer_class = ProfileSerializer
     renderer_classes = (ProfileJSONRenderer,)
 
