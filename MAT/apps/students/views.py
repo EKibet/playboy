@@ -1,83 +1,91 @@
 import csv
+import os
+from datetime import datetime, timedelta
 
+import jwt
+from django.conf import settings
+from django.core.mail import send_mail
+from django.db import IntegrityError
 from django.shortcuts import render
 from rest_framework import generics, status
 from rest_framework.parsers import FileUploadParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from MAT.apps.common.utility import send_link
 
 from MAT.apps.authentication.models import User
-from datetime import datetime,timedelta
-from .models import Cohort, Students
+from MAT.apps.common.utility import send_link
 
-
-from .serializers import CohortSerializer, StudentListSerializer,StudentSerializer
-
-from django.core.mail import send_mail
-from django.conf import settings
-import jwt
-import os
-
+from .serializers import StudentSerializer
+from .renderers import (StudentJSONRenderer, StudentsJSONRenderer)
 
 class StudentInfoUploadView(APIView):
     parser_classes = (FileUploadParser,)
     serializer = StudentSerializer
+    renderer_classes = (StudentsJSONRenderer,)
 
     def post(self, request, format=None):
         file = request.FILES['file']
         decoded_file = file.read().decode('utf-8').splitlines()
         reader = list(csv.DictReader(decoded_file))
+        existing_emails = []
+        created_emails = []
         stats = {
             'created_count': 0,
-            'existed_count': 0,
             'error_count': 0,
-            'error': [],
+            'existing emails': existing_emails,
+            'created emails': created_emails
         }
         for row in reader:
             try:
-                Students.objects.create(username=row['Username'], email=row['email'],
-                                        password='moringaschool', first_name=row['first_name'], second_name=row['second_name'])
+                User.objects.create_student(username=row['Username'], email=row['email'],
+                                        password='moringaschool', first_name=row['first_name'], last_name=row['second_name'],)
                 stats['created_count'] += 1
-            except:
+                created_emails.append(row['email'])
+            except IntegrityError:
+                existing_emails.append(row['email'])
                 stats['error_count'] += 1
-                stats['existed_count'] += 1
-                stats['error'].append({"row": row, "errors": [{"message": "Username exists", "column": "username"}, {
-                                      "message": "Email Exists", "column": "email"}]})
-        return Response(stats)
+        return Response(stats, status=status.HTTP_200_OK)
 
-    def get(self, request, format=None):
-        students_queryset = Students.objects.all()
-        serializer = StudentSerializer(students_queryset, many=True)
+
+class StudentDetailView(APIView):
+    serializer_class = StudentSerializer
+    renderer_classes = (StudentJSONRenderer,)
+
+    def get(self, request, email):
+        try:
+            user = User.objects.get(email=email, is_student=True)
+        except:
+            message = {"error": "User does not exist."}
+            return Response(message, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = self.serializer_class(
+            instance=user, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-
-class CohortCreateView(APIView):
-    """
-    List all cohorts, or create a new cohort.
-    """
-
-    def get(self, request, format=None):
-        cohort_queryset = Cohort.objects.all()
-        serializer = CohortSerializer(cohort_queryset, many=True)
+    def put(self, request, email):
+        try:
+            user = User.objects.get(email=email, is_student=True)
+        except:
+            message = {"error": "User does not exist."}
+            return Response(message, status=status.HTTP_404_NOT_FOUND)
+        data = request.data
+        serializer = self.serializer_class(
+            instance=user, data=data, partial=True,
+            context={
+                'request': request}
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
-
-    def post(self, request, format=None):
-        serializer = CohortSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            print(status.HTTP_200_OK)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 
 class StudentListAPIView(generics.ListAPIView):
     """
     An api view for returning the students list using the serializer
     """
-    queryset = Students.objects.all()
-    serializer_class = StudentListSerializer
+    queryset = User.objects.filter(is_student=True)
+    serializer_class = StudentSerializer
+    renderer_classes = (StudentsJSONRenderer,)
 
 
 class SendPasswordResetEmail(generics.CreateAPIView):

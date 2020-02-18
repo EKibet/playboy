@@ -1,8 +1,12 @@
 from rest_framework import serializers
-from .models import Staff
+
+from MAT.apps.authentication.models import User
+
 
 class StaffListSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Staff
-        fields = ('id','username','first_name','last_name','gender','role','profile_pic','phone_number','email','is_active','is_verified','is_staff','is_student',)
-        # fields = '__all__'
+        model = User
+        fields = ('first_name', 'last_name', 'email',
+                  'username', 'created_at', 'updated_at')
+
+        read_only_fields = ('created_at', 'updated_at', 'username')

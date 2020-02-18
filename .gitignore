@@ -49,7 +49,6 @@ coverage.xml
 *,cover
 .hypothesis/
 
-
 # Translations
 *.mo
 *.pot
@@ -96,5 +95,5 @@ ENV/
 # SQLite3
 db.sqlite3
 
-/staticfiles
-/logs
+staticfiles/
+logs/

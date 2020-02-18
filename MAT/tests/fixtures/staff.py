@@ -1,7 +1,7 @@
 import pytest
 
 # Models
-from MAT.apps.staff.models import User, Staff
+from MAT.apps.authentication.models import User
 
 
 @pytest.fixture(scope='module')
@@ -10,10 +10,6 @@ def new_staff():
         "first_name": "chris",
         "last_name": "karimi",
         "email":"chris@moringaschool.com",
-        "username":"chris",
-        "gender": "Female",
-        "role": "Technical Mentor",
-        "phone_number":"0716491250"
-
+        "username":"chris"
     }
-    return Staff(**params)
+    return User(**params)

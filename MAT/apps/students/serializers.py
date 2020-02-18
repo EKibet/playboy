@@ -3,26 +3,11 @@ from rest_framework.response import Response
 
 from MAT.apps.authentication.models import User
 
-from .models import Cohort, Students
-
-
-class CohortSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Cohort
-        fields = ['name', 'created_by']
-
 
 class StudentSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Students
-        fields = '__all__'
+        model = User
+        fields = ('first_name', 'last_name', 'email', 
+        'username','created_at', 'updated_at')
 
-
-class StudentListSerializer(serializers.ModelSerializer):
-    """
-    The serializer for students data
-    """
-    class Meta:
-        model = Students
-        # fields = '__all__'
-        exclude = ('password', )
+        read_only_fields = ('created_at', 'updated_at', 'username')

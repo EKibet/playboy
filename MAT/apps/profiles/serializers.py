@@ -1,8 +1,7 @@
-from rest_framework import serializers
+from rest_framework import serializers, status
+from rest_framework.response import Response
 
 from .models import UserProfile
-from rest_framework.response import Response
-from rest_framework import status
 
 
 class ProfileSerializer(serializers.ModelSerializer):

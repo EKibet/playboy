@@ -13,10 +13,8 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 import os
 
 import environ
-
 from django.conf import settings
 from datetime import timedelta
-
 
 
 BASE_DIR = environ.Path(__file__) - 4
@@ -158,7 +156,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
-
 AUTH_USER_MODEL = 'authentication.User'
 
 EMAIL_HOST = os.getenv('EMAIL_HOST')

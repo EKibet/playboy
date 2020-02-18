@@ -10,8 +10,10 @@ class TestSendEmails():
     """Tests for sending an email endpoint"""
 
     @pytest.mark.django_db
-    def test_send_email_successfully(self, client, new_user):
+    def test_send_email_successfully(self, client, new_user, get_or_create_token):
         new_user.save()
+        token = get_or_create_token
+        client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
         url = reverse('students:SendPasswordResetEmail')
         data = {
             "email": "sly@gmail.com"
@@ -33,19 +35,23 @@ class TestSendEmails():
         assert response.status_code == status.HTTP_200_OK
 
     @pytest.mark.django_db
-    def test_send_email_unsuccessful(self, client):
+    def test_send_email_unsuccessful(self, client, get_or_create_token):
 
         url = reverse('students:SendPasswordResetEmail')
         data = {
             "email": "sly@mail.com"
         }
+        token = get_or_create_token
+        client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
         response = client.post(url, data=json.dumps(
             data), content_type='application/json')
         assert response.status_code == status.HTTP_404_NOT_FOUND
     @pytest.mark.django_db
-    def test_password_does_match(self, client, new_user):
+    def test_password_does_match(self, client, new_user, get_or_create_token):
 
         new_user.save()
+        token = get_or_create_token
+        client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
         url = reverse('students:SendPasswordResetEmail')
         data = {
             "email": "sly@gmail.com"
