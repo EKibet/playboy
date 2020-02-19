@@ -1,3 +1,4 @@
+
 """
 WSGI config for MAT project.
 
@@ -10,7 +11,8 @@ https://docs.djangoproject.com/en/3.0/howto/deployment/wsgi/
 import os
 
 from django.core.wsgi import get_wsgi_application
-from MAT.config.settings import local
-os.environ.setdefault('DJANGO_SETTINGS_MODULE',local)
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'MAT.config.settings.local')
 
 application = get_wsgi_application()
+
