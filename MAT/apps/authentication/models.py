@@ -1,13 +1,14 @@
-import jwt
-
 from datetime import datetime, timedelta
 
+import jwt
 from django.conf import settings
 from django.contrib.auth.models import (
     AbstractBaseUser, BaseUserManager, PermissionsMixin)
 from django.db import models
+from simple_history.models import HistoricalRecords
 
 from MAT.apps.common.base import CommonFieldsMixin
+from MAT.apps.cohorts.models import Cohort
 
 
 class UserManager(BaseUserManager):
@@ -35,7 +36,7 @@ class UserManager(BaseUserManager):
             raise TypeError('Students must have an email address.')
 
         user = self.model(
-            username=username, email=self.normalize_email(email),first_name=first_name, last_name=last_name)
+            username=username, email=self.normalize_email(email), first_name=first_name, last_name=last_name)
         user.set_password(password)
         user.is_student = True
         user.save()
@@ -76,6 +77,7 @@ class UserManager(BaseUserManager):
     def get_queryset(self):
         return super(UserManager, self).get_queryset().filter(deleted=False)
 
+
 class User(AbstractBaseUser, CommonFieldsMixin, PermissionsMixin):
     first_name = models.CharField(max_length=150, default='First')
     last_name = models.CharField(max_length=150, default='Last')
@@ -90,8 +92,8 @@ class User(AbstractBaseUser, CommonFieldsMixin, PermissionsMixin):
     # the most common form of login credential at the time of writing.
     email = models.EmailField(db_index=True, unique=True, null=False)
 
-    # when a user is registered their account is not yet verified hence we 
-    #offer a way for the user to verify their account 
+    # when a user is registered their account is not yet verified hence we
+    # offer a way for the user to verify their account
     is_verified = models.BooleanField(default=False,)
 
     # The `is_staff` flag is expected by Django to determine who can and cannot
@@ -102,6 +104,10 @@ class User(AbstractBaseUser, CommonFieldsMixin, PermissionsMixin):
     # The `is_student` flag is used to check if a student is logged in
     is_student = models.BooleanField(default=False,)
 
+    # this is to track the changes on the model.
+    history = HistoricalRecords()
+    cohort = models.ForeignKey(
+        Cohort, on_delete=models.CASCADE, related_name='members', null=True)
 
     # The `USERNAME_FIELD` property tells us which field we will use to log in.
     # In this case, we want that to be the email field.
@@ -126,7 +132,7 @@ class User(AbstractBaseUser, CommonFieldsMixin, PermissionsMixin):
         Typically, this would be the user's first and last name. Since we do
         not store the user's real name, we return their username instead.
         """
-        return self.first_name  + self.last_name
+        return self.first_name + self.last_name
 
     def get_short_name(self):
         """

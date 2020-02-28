@@ -21,6 +21,7 @@ pyjwt = "*"
 djangorestframework-simplejwt = "*"
 django-cors-headers = "*"
 sentry-sdk = "*"
+django-simple-history = "*"
 
 [requires]
 python_version = "3.7"

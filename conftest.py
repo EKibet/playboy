@@ -3,7 +3,8 @@ import rest_framework
 
 pytest_plugins = ("MAT.tests.fixtures.users",
                   "MAT.tests.fixtures.cohort_and_students",
-                  "MAT.tests.fixtures.staff", "MAT.tests.fixtures.students_list",)
+                  "MAT.tests.fixtures.staff", "MAT.tests.fixtures.students_list",
+                  "MAT.tests.fixtures.cohorts",)
 
 
 @pytest.fixture(scope='function')
