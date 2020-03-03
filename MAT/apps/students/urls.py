@@ -5,12 +5,12 @@ from . import views
 app_name = 'students'
 
 urlpatterns = [
-    path('upload', views.StudentInfoUploadView.as_view(),
+    path('students/upload', views.StudentInfoUploadView.as_view(),
          name='create_students'),
-    path('', views.StudentListAPIView.as_view(), name="list_students"),
-    path('<str:email>', views.StudentDetailView.as_view(), name='student_details'),
-    path('students/SendPasswordResetEmail',
+    path('students', views.StudentListAPIView.as_view(), name="list_students"),
+    path('students/<str:email>', views.StudentDetailView.as_view(), name='student_details'),
+    path('students/password/reset',
          SendPasswordResetEmail.as_view(), name='SendPasswordResetEmail'),
-    path('students/ResetPasswordView/<token>',
+    path('students/password/reset/<token>',
          ResetPasswordView.as_view(), name='ResetPasswordView')
 ]

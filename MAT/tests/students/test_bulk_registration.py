@@ -9,7 +9,7 @@ from rest_framework import status
 
 class TestStudentEndpoints:
     @pytest.mark.django_db
-    def test_get_all_students(self, client,get_or_create_token):
+    def test_get_all_students_succeeds(self, client,get_or_create_token):
         """Test for getting a all students in a cohort"""
         token = get_or_create_token
         client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
