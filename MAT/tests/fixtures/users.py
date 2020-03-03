@@ -15,7 +15,6 @@ def new_user():
         "username": "sly",
         "email": "sly@gmail.com",
         "password": make_password('sly123'),
-        "is_active": "True"
     }
     return User(**params)
 
@@ -40,7 +39,8 @@ def new_user_with_profile(django_db_blocker, new_user):
             "user": new_user
         }
         return UserProfile(**params)
-@pytest.fixture
+
+@pytest.fixture(scope='function')
 def get_or_create_token(db,client,new_user):
     new_user.save()
     url = reverse('authentication:token_obtain_pair')

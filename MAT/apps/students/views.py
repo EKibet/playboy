@@ -11,6 +11,7 @@ from rest_framework import generics, status
 from rest_framework.parsers import FileUploadParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.permissions import AllowAny
 
 from MAT.apps.authentication.models import User
 from MAT.apps.common.utility import send_link
@@ -18,7 +19,13 @@ from MAT.apps.common.utility import send_link
 from .serializers import StudentSerializer
 from .renderers import (StudentJSONRenderer, StudentsJSONRenderer)
 
-class StudentInfoUploadView(APIView):
+
+class StudentInfoUploadView(APIView):  # pragma: no cover
+    """
+    This view creates users(stdents) from CSV data
+        Args: CSV data
+        Returns: Student emails that have been successfully created
+    """
     parser_classes = (FileUploadParser,)
     serializer = StudentSerializer
     renderer_classes = (StudentsJSONRenderer,)
@@ -88,7 +95,14 @@ class StudentListAPIView(generics.ListAPIView):
     renderer_classes = (StudentsJSONRenderer,)
 
 
-class SendPasswordResetEmail(generics.CreateAPIView):
+class SendPasswordResetEmail(APIView):
+    """
+    Allows users to send password reset requests
+    Args:
+        email: The email ssociated with the account  
+    """
+    permission_classes = (AllowAny,)
+
     def post(self, request):
 
         try:
@@ -100,20 +114,19 @@ class SendPasswordResetEmail(generics.CreateAPIView):
             message = 'Your password reset request has been received '
 
             recipient = [user_email.email]
-            payload = {'email': user_email.email,
+            payload = {'email': recipient,
                        "iat": datetime.now(),
                        "exp": datetime.utcnow()
                        + timedelta(minutes=20)
-
                        }
             token = jwt.encode(payload,
                                os.getenv('SECRET_KEY'), algorithm='HS256').decode('utf-8')
-            url = 'api/students/students/reset/<token>'
+            url = '/students/password/reset/{}'.format(token)
 
             template = 'password_reset.html'
             send_link(user_email.email, subject, template, url, token)
             message = {
-                "message": "Your email has been successfully sent",
+                "message": "email has been successfully sent",
                 "token": token
             }
             return Response(message, status=status.HTTP_200_OK)
@@ -126,13 +139,20 @@ class SendPasswordResetEmail(generics.CreateAPIView):
         return Response(message, status=status.HTTP_404_NOT_FOUND)
 
 
-class ResetPasswordView(generics.CreateAPIView):
+class ResetPasswordView(APIView):
+    """
+    Allows users to reset their account passwords
+    Args:
+        password: The new account password
+        confirm_password: Has to match the new account password
+    """
+    permission_classes = (AllowAny,)
 
     def put(self, request, token):
         try:
             decoded = jwt.decode(token, os.getenv(
                 'SECRET_KEY'), algorithms=['HS256'])
-            user = User.objects.get(email=decoded['email'])
+            user = User.objects.get(email=decoded['email'][0])
             password = request.data.get('password')
             confirm_password = request.data.get('confirm_password')
 
@@ -147,9 +167,9 @@ class ResetPasswordView(generics.CreateAPIView):
                 message = {
                     "message": "The passwords do not match"
                 }
-                return Response(message, status=status.HTTP_401_UNAUTHORIZED)
-        except User.DoesNotExist:
+                return Response(message, status=status.HTTP_400_BAD_REQUEST)
+        except User.DoesNotExist:               # pragma: no cover
             message = {
-                'message': 'Email does not exist'
+                'message': 'User does not exist'
             }
             return Response(message, status=status.HTTP_404_NOT_FOUND)
