@@ -16,6 +16,10 @@ import environ
 from django.conf import settings
 from datetime import timedelta
 
+# Add sentry for error logs
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
+
 
 BASE_DIR = environ.Path(__file__) - 4
 APPS_DIR = BASE_DIR.path('MAT/apps')
