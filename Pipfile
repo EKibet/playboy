@@ -20,6 +20,7 @@ pillow = "*"
 pyjwt = "*"
 djangorestframework-simplejwt = "*"
 django-cors-headers = "*"
+sentry-sdk = "*"
 
 [requires]
 python_version = "3.7"
