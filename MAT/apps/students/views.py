@@ -25,6 +25,7 @@ class StudentInfoUploadView(APIView):  # pragma: no cover
     This view creates users(stdents) from CSV data
         Args: CSV data
         Returns: Student emails that have been successfully created
+
     """
     parser_classes = (FileUploadParser,)
     serializer = StudentSerializer
@@ -42,16 +43,20 @@ class StudentInfoUploadView(APIView):  # pragma: no cover
             'existing emails': existing_emails,
             'created emails': created_emails
         }
-        for row in reader:
-            try:
-                User.objects.create_student(username=row['Username'], email=row['email'],
-                                        password='moringaschool', first_name=row['first_name'], last_name=row['second_name'],)
-                stats['created_count'] += 1
-                created_emails.append(row['email'])
-            except IntegrityError:
-                existing_emails.append(row['email'])
-                stats['error_count'] += 1
-        return Response(stats, status=status.HTTP_200_OK)
+        try:
+            for row in reader:
+                try:
+                    User.objects.create_student(username=row['Username'], email=row['email'],
+                                                password='moringaschool', first_name=row['first_name'], last_name=row['second_name'],)
+                    stats['created_count'] += 1
+                    created_emails.append(row['email'])
+                except IntegrityError:
+                    existing_emails.append(row['email'])
+                    stats['error_count'] += 1
+            return Response(stats, status=status.HTTP_200_OK)
+        except KeyError:
+            message = {'error': 'CSV data does not have correct format.'}
+            return Response(message, status=status.HTTP_400_BAD_REQUEST)
 
 
 class StudentDetailView(APIView):
