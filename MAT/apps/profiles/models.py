@@ -26,8 +26,8 @@ class UserProfile(CommonFieldsMixin):
     def __str__(self):
         return '{}'.format(self.user.username)
 
+
 @receiver(post_save, sender=User)
 def create_profile_post_receiver(sender, instance, *args, **kwargs):
     if kwargs['created']:
         instance.user_profile = UserProfile.objects.create(user=instance)
-
