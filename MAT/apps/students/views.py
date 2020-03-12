@@ -126,7 +126,7 @@ class SendPasswordResetEmail(APIView):
                        }
             token = jwt.encode(payload,
                                os.getenv('SECRET_KEY'), algorithm='HS256').decode('utf-8')
-            url = '/students/password/reset/{}'.format(token)
+            url = 'confirmPassword/{}'.format(token)
 
             template = 'password_reset.html'
             send_link(user_email.email, subject, template, url, token)
