@@ -11,6 +11,7 @@ DJANGO_READ_DOT_ENV_FILE = False
 
 CORS_ALLOW_HEADERS = list(default_headers) + [
     'content-disposition',
+    'access-control-max-age'
 ]
 
 # Initialize Sentry
