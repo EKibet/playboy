@@ -10,6 +10,12 @@ node {
             def lastChanges = readFile('GIT_CHANGES')
             slackSend color: "warning", message: "Started `${env.JOB_NAME}#${env.BUILD_NUMBER}`\n\n_The changes:_\n${lastChanges}"
 
+
+        stage 'Clone repository'
+            sh 'git clone git@gitlab.com:Moringa-School/mat-api.git'
+            sh "cd mat-api"
+
+
         stage 'Test'
             // sh 'virtualenv env -p python3.5'
             // sh '. env/bin/activate'
