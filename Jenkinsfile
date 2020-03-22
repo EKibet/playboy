@@ -13,7 +13,7 @@ node {
 
         stage 'Clone repository'
             // sh 'git clone git@gitlab.com:Moringa-School/mat-api.git'
-            echo 'Clone repository testing..'
+            echo 'Repository already cloned'
         stage 'Test'
             sh "cd mat-api"
             sh "pipenv --python 3.7"
@@ -24,6 +24,7 @@ node {
             // sh "pytest"
             echo "Testing"
         stage 'Deploy'
+            sh './deployment/deploy_prod.sh'
             echo "Testing deploy....."
 
         stage 'Publish results'
