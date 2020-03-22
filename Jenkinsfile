@@ -17,7 +17,7 @@ node {
             echo 'Clone repository testing..'
         stage 'Test'
             sh "pipenv --python 3.7"
-            // sh "pipenv shell"
+            sh "pipenv shell"
             // sh "pipenv install"
             // sh "pytest"
             echo "Testing"
