@@ -24,7 +24,7 @@ node {
             // sh "pytest"
             echo "Testing"
         stage 'Deploy'
-            sh 'chmod 777 ./deployment/'
+            sh 'chmod 777 ./deployment/deploy_prod.sh'
             // sh './deployment/deploy_prod.sh'
             echo "Testing deploy......."
 
