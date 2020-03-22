@@ -12,15 +12,10 @@ node {
 
 
         stage 'Clone repository'
-            sh 'git clone git@gitlab.com:Moringa-School/mat-api.git'
-            sh "cd mat-api"
-
+            // sh 'git clone git@gitlab.com:Moringa-School/mat-api.git'
+            // sh "cd mat-api"
             echo 'Clone repository testing'
         stage 'Test'
-            // sh 'virtualenv env -p python3.5'
-            // sh '. env/bin/activate'
-            // sh 'env/bin/pip install -r. requirements.txt'
-            // sh 'env/bin/python3.5 manage.py test --testrunner=djtrump.tests.test_runners.NoDbTestRunner'.......
             // sh "pipenv --python 3.7"
             // sh "pipenv shell"
             // sh "pipenv install"
