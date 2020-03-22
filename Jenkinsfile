@@ -18,6 +18,7 @@ node {
             sh "cd mat-api"
             sh "pipenv --python 3.7"
             sh "exit"
+            sh "python3 -m pip3 install pytest"
             // sh "pipenv run"
             sh "pipenv install"
             sh "pytest"
