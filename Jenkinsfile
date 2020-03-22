@@ -21,7 +21,7 @@ node {
             sh "python3 -m pip install pytest"
             // sh "pipenv run"
             sh "pipenv install"
-            sh "pytest"
+            // sh "pytest"
             echo "Testing"
         stage 'Deploy'
             echo "Testing deploy....."
