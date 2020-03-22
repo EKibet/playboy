@@ -12,7 +12,7 @@ node {
 
 
         stage 'Clone repository'
-            sh 'git clone git@gitlab.com:Moringa-School/mat-api.git'
+            // sh 'git clone git@gitlab.com:Moringa-School/mat-api.git'
             echo 'Repository already cloned'
         stage 'Test'
             sh "cd mat-api"
