@@ -16,7 +16,7 @@ node {
             // sh "cd mat-api"
             echo 'Clone repository testing..'
         stage 'Test'
-            // sh "pipenv --python 3.7"
+            sh "pipenv --python 3.7"
             // sh "pipenv shell"
             // sh "pipenv install"
             // sh "pytest"
