@@ -12,12 +12,12 @@ node {
 
 
         stage 'Clone repository'
-            // sh 'git clone git@gitlab.com:Moringa-School/mat-api.git'
+            sh 'sudo git clone git@gitlab.com:Moringa-School/mat-api.git'
             // sh "cd mat-api"
             echo 'Clone repository testing..'
         stage 'Test'
             sh "pipenv --python 3.7"
-            sh "pipenv shell"
+            // sh "pipenv shell"
             // sh "pipenv install"
             // sh "pytest"
             echo "Testing"
