@@ -19,9 +19,7 @@ node {
             sh "pipenv --python 3.7"
             sh "exit"
             sh "python3 -m pip install pytest"
-            // sh "pipenv run"
             sh "pipenv install"
-            // sh "pytest"
             echo "Testing"
         stage 'Deploy'
             sh 'chmod +x deployment/deploy_prod.sh '
