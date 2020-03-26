@@ -23,7 +23,8 @@ def new_user2():
     params = {
         "username": "ken",
         "email": "ken@gmail.com",
-        "password": "ken"
+        "password": make_password('ken'),
+        "is_active": "True"
     }
     return User(**params)
 
@@ -41,6 +42,19 @@ def new_user_with_profile(django_db_blocker, new_user):
         return UserProfile(**params)
 
 @pytest.fixture(scope='function')
+def new_user_with_profile2(django_db_blocker, new_user2):
+    new_user2.save()
+    with django_db_blocker.unblock():
+        params = {
+            "image": "https://www.google.com/imgres?imgurl=https%3A%2F%2Fmiro",
+            "gender": "Male",
+            "student_class": "MC21",
+            "fullname": "MC21",
+            "user": new_user2
+        }
+        return UserProfile(**params)
+
+@pytest.fixture
 def get_or_create_token(db,client,new_user):
     new_user.save()
     url = reverse('authentication:token_obtain_pair')

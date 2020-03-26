@@ -37,6 +37,9 @@ class ProfileDetail(APIView):
 
     def put(self, request, username):
         instance_profile = UserProfile.objects.get(user__username=username)
+        if instance_profile.user.username != request.user.username:
+                data = {'error': 'You are not allowed to edit or another persons profile'}
+                return Response(data, status.HTTP_403_FORBIDDEN)
         data = request.data
         serializer = self.serializer_class(
             instance=instance_profile, data=data, partial=True,
