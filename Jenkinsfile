@@ -24,10 +24,10 @@ node {
         stage 'Deploy'
             sh 'chmod +x /var/lib/jenkins/workspace/Mat_Jenkins/deployment/deploy_prod.sh '
             // sh "cd /var/lib/jenkins/workspace/Mat_Jenkins/deployment/ "
-            sh "./var/lib/jenkins/workspace/Mat_Jenkins/deployment/deploy_prod.sh" 
+            sh "./deploy_prod.sh" 
             sh 'chmod +x /var/lib/jenkins/workspace/Mat_Jenkins@2/deployment/deploy_prod.sh '
             // sh "cd /var/lib/jenkins/workspace/Mat_Jenkins@2/deployment/"
-            sh "./var/lib/jenkins/workspace/Mat_Jenkins@2/deployment/deploy_prod.sh"
+            sh "./deploy_prod.sh"
             
             echo "Testing deploy."
 
