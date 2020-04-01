@@ -22,8 +22,8 @@ node {
             sh "pipenv install"
             echo "Testing"
         stage 'Deploy'
-            sh 'chmod +x deployment/deploy_prod.sh '
-            sh './deployment/deploy_prod.sh '
+            sh 'sudo chmod +x ~/deployment/deploy_prod.sh '
+            sh 'sudo ./deployment/deploy_prod.sh '
             echo "Testing deploy."
 
         stage 'Publish results'
