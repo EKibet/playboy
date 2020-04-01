@@ -12,7 +12,7 @@ node {
 
 
         stage 'Clone repository'
-            // sh 'git clone git@gitlab.com:Moringa-School/mat-api.git'
+            //sh 'git clone git@gitlab.com:Moringa-School/mat-api.git'
             echo 'Repository exists'
         stage 'Test'
             sh "cd mat-api"
@@ -22,8 +22,8 @@ node {
             sh "pipenv install"
             echo "Testing"
         stage 'Deploy'
-            sh 'chmod +x /mat-api/deployment/deploy_prod.sh '
-            sh './deployment/deploy_prod.sh '
+            sh 'chmod +x /var/lib/jenkins/workspace/Mat_Jenkins/deployment/deploy_prod.sh '
+            sh './var/lib/jenkins/workspace/Mat_Jenkins/deployment/deploy_prod.sh '
             echo "Testing deploy."
 
         stage 'Publish results'
