@@ -24,7 +24,7 @@ node {
         stage 'Deploy'
             sh 'chmod +x deployment/deploy_prod.sh '
             sh 'cd deployment/'
-            sh "./deploy_prod.sh" 
+            // sh "./deploy_prod.sh" 
             
             echo "Testing deploy."
 
