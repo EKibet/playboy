@@ -15,6 +15,8 @@ def new_user():
         "username": "sly",
         "email": "sly@gmail.com",
         "password": make_password('sly123'),
+        "is_student":True,
+        "is_verified":True
     }
     return User(**params)
 
@@ -26,7 +28,6 @@ def new_user2():
         "password": "ken"
     }
     return User(**params)
-
 @pytest.fixture(scope='function')
 def new_user_with_profile(django_db_blocker, new_user):
     new_user.save()

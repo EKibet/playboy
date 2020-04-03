@@ -19,7 +19,7 @@ node {
             sh "pipenv --python 3.7"
             sh "exit"
             sh "python3 -m pip install pytest"
-            sh "pipenv install"
+            sh "pipenv sync"
             echo "Testing"
         stage 'Deploy'
             // sh 'chmod +x /var/lib/jenkins/workspace/Mat_Jenkins/deployment/deploy_prod.sh '
