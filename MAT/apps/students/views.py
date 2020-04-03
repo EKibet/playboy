@@ -18,7 +18,8 @@ from rest_framework.parsers import FileUploadParser, MultiPartParser
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import AllowAny,IsAdminUser
+from rest_framework.permissions import AllowAny, IsAdminUser
+from rest_framework import exceptions
 
 from MAT.apps.authentication.models import User
 from MAT.apps.common.utility import send_link
@@ -27,6 +28,7 @@ from MAT.config.settings.base import env
 from .models import AttendanceRecords
 from .serializers import StudentSerializer,StudentRegistrationSerializer, AttendanceRecordsSerializer
 from .renderers import (StudentJSONRenderer, StudentsJSONRenderer)
+from django.contrib.sites.shortcuts import get_current_site
 
 
 class StudentInfoUploadView(APIView):  # pragma: no cover
@@ -52,6 +54,7 @@ class StudentInfoUploadView(APIView):  # pragma: no cover
             'existing_emails': existing_emails,
             'created_emails': created_emails,
         }
+        # def send_link(email, subject, template, url, *args):
         try:
             for row in reader:
                 try:
@@ -66,6 +69,34 @@ class StudentInfoUploadView(APIView):  # pragma: no cover
         except KeyError:
             message = {'error': 'CSV data does not have correct format.'}
             return Response(message, status=status.HTTP_400_BAD_REQUEST)
+
+
+class StudentVerificationAPIVIew(generics.GenericAPIView):
+    serializer_class = StudentSerializer
+    # by this time the student will not be able to login,
+    # therefore lets allow unauthenticated  requests for this endpoint.
+    permission_classes = (AllowAny,)
+
+    def get(self, request, token):
+        """
+        Given a token, we decode the token get the user and activate him/her
+        """
+        try:
+            payload = jwt.decode(token, os.getenv(
+                'SECRET_KEY'), algorithms=['HS256'])
+        except Exception as e:
+            msg = str(e)
+            raise exceptions.ValidationError(msg)
+
+        # get the user then check if he is verified
+        user = User.objects.get(pk=payload['user_id'])
+
+        # first check if the user is verified
+        if user.is_verified == False:
+            user.is_verified = True
+            user.save()
+            return Response({"message": "account verified successfully"}, status=status.HTTP_200_OK)
+        return Response({"message": "You have already verified your account"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class StudentDetailView(APIView):
