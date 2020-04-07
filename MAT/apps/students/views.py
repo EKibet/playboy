@@ -76,6 +76,7 @@ class StudentVerificationAPIVIew(generics.GenericAPIView):
     # by this time the student will not be able to login,
     # therefore lets allow unauthenticated  requests for this endpoint.
     permission_classes = (AllowAny,)
+    renderer_classes = (StudentJSONRenderer,)
 
     def get(self, request, token):
         """
@@ -85,8 +86,8 @@ class StudentVerificationAPIVIew(generics.GenericAPIView):
             payload = jwt.decode(token, os.getenv(
                 'SECRET_KEY'), algorithms=['HS256'])
         except jwt.ExpiredSignature:
-            msg = "Token has a expired, please generate a new one"
-            raise exceptions.ValidationError(msg)
+            msg = "Token has expired, please generate a new one"
+            raise exceptions.AuthenticationFailed(msg)
         except jwt.DecodeError:
             msg = 'Error decoding token, please generate a new one.'
             raise exceptions.AuthenticationFailed(msg)

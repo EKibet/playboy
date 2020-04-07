@@ -81,8 +81,42 @@ class TestStudentsList:
         token = get_or_create_token
         client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
         new_student.save()
-        url = reverse('student_verication', kwargs={
+        url = reverse('students:student_verification', kwargs={
                       'token': token})
 
         response = client.get(url)
         assert response.status_code == status.HTTP_200_OK
+
+    @pytest.mark.django_db
+    def test_error_decoding_token(self, client, new_student, get_or_create_token):
+        token = get_or_create_token
+        token_2 = 'slkdlsdkslkdlskdsldkslkdlskdlskdksdklsdkdsl'
+        client.credentials(HTTP_AUTHORIZATION='Bearer '+token)
+        url = reverse('students:student_verification', kwargs={
+                      'token': token_2})
+        response = client.get(url)
+        assert response.data.get(
+            'detail') == "Error decoding token, please generate a new one."
+
+    @pytest.mark.django_db
+    def test_expired_token(self, client, new_student, get_or_create_token, create_expired_token):
+        token = get_or_create_token
+        token_2 = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNTg1OTg0ODIyLCJqdGkiOiI4OWQwZjQ2NWFkNjU0NTYzOWJkZjRhZTNhODI1YTBkMSIsInVzZXJfaWQiOjF9.ik0Yat7Pi1_wCBhEx1weodGX6prglv3MQ1LRlyuMIOk'
+        client.credentials(HTTP_AUTHORIZATION='Bearer '+token)
+        url = reverse('students:student_verification', kwargs={
+                      'token': create_expired_token})
+        response = client.get(url)
+        assert response.data.get(
+            'detail') == "Error decoding token, please generate a new one."
+
+    @pytest.mark.django_db
+    def test_verify_student_account(self, client, new_student, get_or_create_token):
+        token = get_or_create_token
+        client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
+        new_student.save()
+        url = reverse('students:student_verification', kwargs={
+                      'token': token})
+
+        client.get(url)
+        response = client.get(url)
+        assert response.status_code == status.HTTP_400_BAD_REQUEST

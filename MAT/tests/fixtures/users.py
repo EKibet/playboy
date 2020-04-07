@@ -1,13 +1,14 @@
-import pytest
 import json
-from django.urls import reverse
+from datetime import datetime, timedelta
 
+import jwt
+import pytest
+from django.contrib.auth.hashers import make_password
+from django.urls import reverse
 
 # Models
 from MAT.apps.profiles.models import User, UserProfile
-from django.contrib.auth.hashers import make_password
-
-
+from MAT.config.settings.base import env
 
 @pytest.fixture(scope='module')
 def new_user():
@@ -96,3 +97,17 @@ def get_or_create_admin_token(db,client,new_admin_user):
                                    content_type='application/json')
     token =  response.data['access']
     return token
+
+@pytest.fixture(scope='function')
+def create_expired_token(db, new_user):
+    user = new_user.save()
+    JWT_SECRET = env.str('SECRET_KEY')
+    JWT_ALGORITHM = 'HS256'
+    JWT_EXP_DELTA_DAYS = 60
+
+    payload = {
+        'user_id': 2,
+        'exp': datetime.utcnow() - timedelta(days=JWT_EXP_DELTA_DAYS)
+    }
+    jwt_token = jwt.encode(payload, JWT_SECRET, JWT_ALGORITHM)
+    return jwt_token

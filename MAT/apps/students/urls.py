@@ -1,6 +1,7 @@
 from django.urls import include, path
 
-from .views import ResetPasswordView, SendPasswordResetEmail, StudentVerificationAPIVIew, SendPasswordResetEmail, ResetPasswordView
+from .views import SendPasswordResetEmail, ResetPasswordView, ResetPasswordView, SendPasswordResetEmail
+from . import views
 
 app_name = 'students'
 
@@ -18,8 +19,8 @@ urlpatterns = [
          name='attendance_checkin'),
     path('students/check-out/', views.AttendanceCheckoutApiView.as_view(),
          name='attendance_checkout'),
-    path('students/singleuser/registration',
-         views.SingleUserRegistrationView.as_view(), name='SingleUserRegistration'),
-    path('students/verify/<str:token>', StudentVerificationAPIVIew.as_view(),
-         name='student_verication')
+    path('students/singleuser/registration', 
+          views.SingleUserRegistrationView.as_view(),name='SingleUserRegistration'),
+    path('students/verify/<str:token>', views.StudentVerificationAPIVIew.as_view(),
+         name='student_verification')
 ]
