@@ -84,8 +84,8 @@ class StudentVerificationAPIVIew(generics.GenericAPIView):
         try:
             payload = jwt.decode(token, os.getenv(
                 'SECRET_KEY'), algorithms=['HS256'])
-        except Exception as e:
-            msg = str(e)
+        except jwt.ExpiredSignature:
+            msg = "Token has a expired, please generate a new one"
             raise exceptions.ValidationError(msg)
 
         # get the user then check if he is verified
