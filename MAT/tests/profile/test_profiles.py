@@ -47,3 +47,18 @@ class TestUserProfile():
         response = client.put(url, data=json.dumps(update_data),
                               content_type='application/json')
         assert response.status_code == status.HTTP_200_OK
+
+    @pytest.mark.django_db
+    def test_edit_other_persons_profile(self, client, get_or_create_token, new_user2):
+        """Test to edit the profile of another user"""
+        new_user2.save()
+        update_data = {
+            "profile": {
+                "gender": "female"
+            }}
+        token = get_or_create_token
+        url = reverse('profiles:profile_details', kwargs={'username': 'ken'})
+        client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
+        response = client.put(url, data=json.dumps(update_data),
+                              content_type='application/json')
+        assert response.status_code == status.HTTP_403_FORBIDDEN
