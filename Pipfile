@@ -25,6 +25,7 @@ celery = "*"
 redis = "*"
 cloudinary = "*"
 django = "*"
+google-auth = "*"
 
 [requires]
 python_version = "3.7"
