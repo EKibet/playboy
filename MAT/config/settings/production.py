@@ -14,6 +14,10 @@ CORS_ALLOW_HEADERS = list(default_headers) + [
     'access-control-max-age'
 ]
 
+# Email backend for Production
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+
 # Initialize Sentry
 sentry_sdk.init(
     dsn=env.str('SENTRY_DSN'),
