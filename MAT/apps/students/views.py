@@ -18,14 +18,14 @@ from rest_framework.parsers import FileUploadParser, MultiPartParser
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny,IsAdminUser
 
 from MAT.apps.authentication.models import User
 from MAT.apps.common.utility import send_link
 from MAT.config.settings.base import env
 
 from .models import AttendanceRecords
-from .serializers import StudentSerializer,AttendanceRecordsSerializer
+from .serializers import StudentSerializer,StudentRegistrationSerializer, AttendanceRecordsSerializer
 from .renderers import (StudentJSONRenderer, StudentsJSONRenderer)
 
 
@@ -289,3 +289,26 @@ class AttendanceCheckoutApiView(APIView):
 
             return Response(message, status=status.HTTP_404_NOT_FOUND)                        
                      
+
+class SingleUserRegistrationView(generics.CreateAPIView):
+    """
+    Allows a staff to create single student's account
+    Args:
+        first_name: the student's first name
+        last_name: the student's last name
+        username: username that will be indexed by the system
+        email: the student's email
+        password: The new account password
+    """
+    permission_classes =[IsAdminUser]
+    serializer_class = StudentRegistrationSerializer
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user_email = request.data.get('email')
+        message = {0:"User created Successfully", 1:"User already exists"}
+        if User.objects.filter(email=user_email).exists():
+            return Response(message[1], status=status.HTTP_400_BAD_REQUEST )
+        serializer.save()
+        return Response(message[0], status= status.HTTP_201_CREATED)

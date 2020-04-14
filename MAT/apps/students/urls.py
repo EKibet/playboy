@@ -18,5 +18,6 @@ urlpatterns = [
          name='attendance_checkin'),
     path('students/check-out/', views.AttendanceCheckoutApiView.as_view(),
          name='attendance_checkout'),
-
+    path('students/singleuser/registration', 
+          views.SingleUserRegistrationView.as_view(),name='SingleUserRegistration')
 ]
