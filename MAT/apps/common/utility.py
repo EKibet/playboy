@@ -14,6 +14,7 @@ def send_link(email, subject, template, url, *args):
     if saved_args['template'] == 'student_invite_template.html':
         token = saved_args['args'][0]
     from_email, to_email = EMAIL_HOST_USER, email
+    password = os.getenv('STUDENTS_PASSWORD')
     site_url = os.getenv('APP_BASE_URL')
     link_url = str(site_url) + \
         url + '{}/'.format(token)
@@ -25,7 +26,8 @@ def send_link(email, subject, template, url, *args):
             'token': token,
             'username': to_email,
             'link': link_url,
-            'link_article': link_article
+            'link_article': link_article,
+            'password': password,
         })
     send_mail(subject, '', from_email,
             [to_email, ], html_message=message, fail_silently=False)

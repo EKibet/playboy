@@ -113,7 +113,7 @@ class SendPasswordResetEmail(APIView):
     """
     Allows users to send password reset requests
     Args:
-        email: The email ssociated with the account  
+        email: The email ssociated with the account
     """
     permission_classes = (AllowAny,)
 
