@@ -3,8 +3,8 @@ from rest_framework import serializers, status
 from rest_framework.response import Response
 
 from MAT.apps.authentication.models import User
-
-from .models import AttendanceRecords
+from .models import AttendanceRecords, AttendanceComment
+from MAT.apps.authentication.serializers import UserSerializer
 
 
 class StudentSerializer(serializers.ModelSerializer):
@@ -20,6 +20,7 @@ class AttendanceRecordsSerializer(serializers.ModelSerializer):
     class Meta:
         model = AttendanceRecords
         fields = ('is_present', 'is_late')
+        
 class StudentRegistrationSerializer(serializers.ModelSerializer):
 
     first_name = serializers.CharField(max_length=100) 
@@ -41,3 +42,23 @@ class StudentRegistrationSerializer(serializers.ModelSerializer):
             **validated_data 
             )
         return user
+        fields = ('is_present','is_late')
+        fields = '__all__'
+
+
+class AttendanceCommentSerializer(serializers.ModelSerializer): 
+        user = serializers.SerializerMethodField()
+        record = serializers.SerializerMethodField()
+
+
+        def get_user(self, object): 
+            user = UserSerializer(object.user_id)
+            return user.data
+        
+        def get_record(self, object): 
+            record_data = AttendanceRecordsSerializer(object.record)
+            return record_data.data
+
+        class Meta:
+            model = AttendanceComment
+            fields = ('user', 'text', 'tag', 'record', 'seen', 'check_out_comment', 'check_in_comment')

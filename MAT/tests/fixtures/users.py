@@ -59,6 +59,8 @@ def new_user_with_profile(django_db_blocker, new_user):
         }
         return UserProfile(**params)
 
+
+
 @pytest.fixture(scope='function')
 def new_user_with_profile2(django_db_blocker, new_user2):
     new_user2.save()
