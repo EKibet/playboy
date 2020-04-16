@@ -8,3 +8,8 @@ app = Celery('MAT.config.settings')
 app.config_from_object('MAT.config.settings.base')
 app.autodiscover_tasks(lambda: local.INSTALLED_APPS)
 
+
+
+@app.task(bind=True)
+def debug_task(self):
+    print('Request: {0!r}'.format(self.request))

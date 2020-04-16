@@ -3,8 +3,11 @@ import os
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from rest_framework.response import Response
+from rest_framework import permissions
+
 
 from MAT.config.settings.base import EMAIL_HOST_USER
+
 
 
 def send_link(email, subject, template, url, *args):

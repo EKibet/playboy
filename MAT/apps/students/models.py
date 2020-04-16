@@ -9,16 +9,17 @@ class AttendanceRecords(CommonFieldsMixin):
     user_id = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     is_present = models.BooleanField(default=False)
     is_late = models.BooleanField(default=True)
-    checked_in = models.DateTimeField(null=True)
+    checked_in = models.DateTimeField(null=True, blank=True)
     is_checked_in = models.BooleanField(default=False)
     is_checked_out = models.BooleanField(default=False)
-    checked_out = models.DateTimeField(null=True)
+    checked_out = models.DateTimeField(null=True, blank=True)
     date =  models.DateField(default=datetime.date.today)
-
-
 
 class AttendanceComment(CommonFieldsMixin):
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     text = models.TextField()
     record = models.ForeignKey(AttendanceRecords, on_delete=models.CASCADE)
+    tag = models.CharField(max_length=50, null=True)
     seen = models.BooleanField(default=False)
+    check_out_comment = models.BooleanField(default=False)
+    check_in_comment = models.BooleanField(default=False)
