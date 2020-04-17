@@ -23,6 +23,7 @@ django-cors-headers = "*"
 sentry-sdk = "*"
 django-simple-history = "*"
 celery = "*"
+redis = "*"
 
 [requires]
 python_version = "3.7"

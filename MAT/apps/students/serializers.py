@@ -7,6 +7,7 @@ from .models import AttendanceRecords, AttendanceComment
 from MAT.apps.authentication.serializers import UserSerializer
 
 
+
 class StudentSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -19,8 +20,7 @@ class StudentSerializer(serializers.ModelSerializer):
 class AttendanceRecordsSerializer(serializers.ModelSerializer):
     class Meta:
         model = AttendanceRecords
-        fields = ('is_present', 'is_late')
-        
+        fields = (  'user_id','is_present','is_late','checked_in','is_checked_in','is_checked_out','checked_out','date',)
 class StudentRegistrationSerializer(serializers.ModelSerializer):
 
     first_name = serializers.CharField(max_length=100) 
@@ -42,8 +42,6 @@ class StudentRegistrationSerializer(serializers.ModelSerializer):
             **validated_data 
             )
         return user
-        fields = ('is_present','is_late')
-        fields = '__all__'
 
 
 class AttendanceCommentSerializer(serializers.ModelSerializer): 

@@ -23,7 +23,7 @@ class TestSendEmails():
         client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
         response = client.post(url, data=json.dumps(data), content_type='application/json')
         assert response.status_code == status.HTTP_200_OK
-        assert (len(mail.outbox), 1)
+        assert len(mail.outbox) == 1
         assert mail.outbox[0].subject, 'Testing2'
         assert mail.outbox[0].message, 'Trying this out'
 
@@ -43,7 +43,7 @@ class TestSendEmails():
         client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
         response = client.post(url, data=json.dumps(data), content_type='application/json')
         assert response.status_code == status.HTTP_200_OK
-        assert (len(mail.outbox), 1)
+        assert len(mail.outbox) == 1
         assert mail.outbox[0].subject, 'Testing2'
         assert mail.outbox[0].message, 'Trying this out'
 
