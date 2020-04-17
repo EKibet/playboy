@@ -1,8 +1,8 @@
 import csv
 import json
 import os
-from datetime import datetime, timedelta, date
-
+from datetime import date, datetime, timedelta
+import calendar
 import jwt
 import pytz
 from django.conf import settings
@@ -13,23 +13,23 @@ from django.db import IntegrityError
 from django.http import Http404
 from django.shortcuts import get_list_or_404, render
 from django.utils import timezone
-from rest_framework import generics, status
+from rest_framework import generics, status, exceptions
 from rest_framework.parsers import FileUploadParser, MultiPartParser
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import AllowAny, IsAdminUser
-from rest_framework import exceptions
-
 from MAT.apps.authentication.models import User
 from MAT.apps.common.utility import send_link
 from MAT.config.settings.base import env
-
-from .models import AttendanceRecords
-from .serializers import StudentSerializer,StudentRegistrationSerializer, AttendanceRecordsSerializer
+from .utility_functions import convert_date
+from .models import AttendanceComment, AttendanceRecords
+from .serializers import StudentSerializer
 from .renderers import (StudentJSONRenderer, StudentsJSONRenderer)
+from .serializers import StudentSerializer,StudentRegistrationSerializer, AttendanceRecordsSerializer
+from .serializers import (
+    AttendanceCommentSerializer, AttendanceRecordsSerializer,
+    StudentSerializer)
 from django.contrib.sites.shortcuts import get_current_site
-
 
 class StudentInfoUploadView(APIView):  # pragma: no cover
     """
@@ -59,7 +59,7 @@ class StudentInfoUploadView(APIView):  # pragma: no cover
             for row in reader:
                 try:
                     User.objects.create_student(username=row['Username'], email=row['email'],
-                                                password=env.str('STUDENTS_PASSWORD','moringaschool'), first_name=row['first_name'], last_name=row['second_name'],)
+                                                password=env.str('STUDENTS_PASSWORD', 'moringaschool'), first_name=row['first_name'], last_name=row['second_name'],)
                     stats['created_count'] += 1
                     created_emails.append(row['email'])
                 except IntegrityError:
@@ -103,46 +103,46 @@ class StudentVerificationAPIVIew(generics.GenericAPIView):
 
 
 class StudentDetailView(APIView):
-    serializer_class = StudentSerializer
-    renderer_classes = (StudentJSONRenderer,)
-
-    def get(self, request, email):
-        try:
-            user = User.objects.get(email=email, is_student=True)
-        except:
-            message = {"error": "User does not exist."}
-            return Response(message, status=status.HTTP_404_NOT_FOUND)
-
-        serializer = self.serializer_class(
-            instance=user, context={'request': request})
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    def put(self, request, email):
-        try:
-            user = User.objects.get(email=email, is_student=True)
-        except:
-            message = {"error": "User does not exist."}
-            return Response(message, status=status.HTTP_404_NOT_FOUND)
-        data = request.data
-        serializer = self.serializer_class(
-            instance=user, data=data, partial=True,
-            context={
-                'request': request}
-        )
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-
+   serializer_class = StudentSerializer
+   renderer_classes = (StudentJSONRenderer,)
+ 
+   def get(self, request, email):
+       try:
+           user = User.objects.get(email=email, is_student=True)
+       except:
+           message = {"error": "User does not exist."}
+           return Response(message, status=status.HTTP_404_NOT_FOUND)
+ 
+       serializer = self.serializer_class(
+           instance=user, context={'request': request})
+       return Response(serializer.data, status=status.HTTP_200_OK)
+ 
+   def put(self, request, email):
+       try:
+           user = User.objects.get(email=email, is_student=True)
+       except:
+           message = {"error": "User does not exist."}
+           return Response(message, status=status.HTTP_404_NOT_FOUND)
+       data = request.data
+       serializer = self.serializer_class(
+           instance=user, data=data, partial=True,
+           context={
+               'request': request}
+       )
+       serializer.is_valid(raise_exception=True)
+       serializer.save()
+       return Response(serializer.data, status=status.HTTP_200_OK)
+ 
+ 
 class StudentListAPIView(generics.ListAPIView):
-    """
-    An api view for returning the students list using the serializer
-    """
-    queryset = User.objects.filter(is_student=True)
-    serializer_class = StudentSerializer
-    renderer_classes = (StudentsJSONRenderer,)
-
-
+   """
+   An api view for returning the students list using the serializer
+   """
+   queryset = User.objects.filter(is_student=True)
+   serializer_class = StudentSerializer
+   renderer_classes = (StudentsJSONRenderer,)
+ 
+ 
 class SendPasswordResetEmail(APIView):
     """
     Allows users to send password reset requests
@@ -188,40 +188,39 @@ class SendPasswordResetEmail(APIView):
 
 
 class ResetPasswordView(APIView):
-    """
-    Allows users to reset their account passwords
-    Args:
-        password: The new account password
-        confirm_password: Has to match the new account password
-    """
-    permission_classes = (AllowAny,)
-
-    def put(self, request, token):
-        try:
-            decoded = jwt.decode(token, env.str(
-                'SECRET_KEY'), algorithms=['HS256'])
-            user = User.objects.get(email=decoded['email'][0])
-            password = request.data.get('password')
-            confirm_password = request.data.get('confirm_password')
-
-            if password == confirm_password:
-                user.set_password(confirm_password)
-                user.save()
-                message = {
-                    "message": "Password has been confirmed"
-                }
-                return Response(message, status=status.HTTP_200_OK)
-            else:
-                message = {
-                    "message": "The passwords do not match"
-                }
-                return Response(message, status=status.HTTP_400_BAD_REQUEST)
-        except User.DoesNotExist:               # pragma: no cover
-            message = {
-                'message': 'User does not exist'
-            }
-            return Response(message, status=status.HTTP_404_NOT_FOUND)
-
+   """
+   Allows users to reset their account passwords
+   Args:
+       password: The new account password
+       confirm_password: Has to match the new account password
+   """
+   permission_classes = (AllowAny,)
+ 
+   def put(self, request, token):
+       try:
+           decoded = jwt.decode(token, env.str(
+               'SECRET_KEY'), algorithms=['HS256'])
+           user = User.objects.get(email=decoded['email'][0])
+           password = request.data.get('password')
+           confirm_password = request.data.get('confirm_password')
+ 
+           if password == confirm_password:
+               user.set_password(confirm_password)
+               user.save()
+               message = {
+                   "message": "Password has been confirmed"
+               }
+               return Response(message, status=status.HTTP_200_OK)
+           else:
+               message = {
+                   "message": "The passwords do not match"
+               }
+               return Response(message, status=status.HTTP_400_BAD_REQUEST)
+       except User.DoesNotExist:               # pragma: no cover
+           message = {
+               'message': 'User does not exist'
+           }
+           return Response(message, status=status.HTTP_404_NOT_FOUND)
 class AttendanceRecordsAPIView(APIView):
     """
         Allows students checked-in
@@ -232,50 +231,51 @@ class AttendanceRecordsAPIView(APIView):
     serializer_class = AttendanceRecordsSerializer
     def put(self, request):
 
-        punctual_time_string = env.str('PUNCTUAL_TIME','05:30')
-        strf_now=datetime.strftime(datetime.utcnow(),"%H:%M:%S")
+        punctual_time_string = env.str('PUNCTUAL_TIME', '08:30')
+        strf_now = datetime.strftime(datetime.utcnow(), "%H:%M:%S")
         response = {
             "update": '',
             "error": ''
         }
         try:
             if strf_now <= punctual_time_string:
-                attendance_record=get_list_or_404(AttendanceRecords,is_checked_in=False,user_id=request.user,user_id__is_student=True, date=datetime.today())[0]
-                attendance_record.is_present=True
-                attendance_record.checked_in=timezone.now()
-                attendance_record.is_checked_in=True                
-                attendance_record.is_late=False
-                attendance_record.save()                
-                res=serializers.serialize('json',[attendance_record])
-                response['data']=json.loads(res)                
+                attendance_record = get_list_or_404(
+                    AttendanceRecords, is_checked_in=False, user_id=request.user, user_id__is_student=True, date=datetime.today())[0]
+                attendance_record.is_present = True
+                attendance_record.checked_in = timezone.now()
+                attendance_record.is_checked_in = True
+                attendance_record.is_late = False
+                attendance_record.save()
+                res = serializers.serialize('json', [attendance_record])
+                response['data'] = json.loads(res)
                 response['update'] = 'Checked in as punctual'
 
             elif(strf_now > punctual_time_string):
 
-                attendance_record=get_list_or_404(AttendanceRecords,user_id=request.user,is_checked_in=False,user_id__is_student=True, date=datetime.today())[0]
-                attendance_record.is_present=True
-                attendance_record.checked_in=timezone.now()
-                attendance_record.is_late=True
-                attendance_record.is_checked_in=True
+                attendance_record = get_list_or_404(
+                    AttendanceRecords, user_id=request.user, is_checked_in=False, user_id__is_student=True, date=datetime.today())[0]
+                attendance_record.is_present = True
+                attendance_record.checked_in = timezone.now()
+                attendance_record.is_late = True
+                attendance_record.is_checked_in = True
                 attendance_record.save()
-                res=serializers.serialize('json',[attendance_record])
-                response['data']=json.loads(res)
+                res = serializers.serialize('json', [attendance_record])
+                response['data'] = json.loads(res)
                 response['update'] = 'Checked in as late'
 
             return Response(response, status=status.HTTP_200_OK)
 
         except Http404:
-            message={"error":[]}
+            message = {"error": []}
             if AttendanceRecords.objects.filter(is_checked_in=True, date=datetime.today()):
                 message.get("error").append("Cannot checkin more than once!")
             if AttendanceRecords.objects.filter(user_id__is_student=False, date=datetime.today()):
                 message.get("error").append("Student account not verified!")
-            if len(AttendanceRecords.objects.filter(user_id=request.user)) == 0:
-                message.get("error").append("Cannot find attendace record matching your profile!")
+            if len(AttendanceRecords.objects.filter(user_id=request.user,date=datetime.today())) == 0:
+                message.get("error").append(
+                    "Cannot find attendace record matching your profile!")
 
             return Response(message, status=status.HTTP_404_NOT_FOUND)
-           
-
 class AttendanceCheckoutApiView(APIView):
     """
         Allows students who checked-in to check-out
@@ -283,45 +283,49 @@ class AttendanceCheckoutApiView(APIView):
             Valid Token
 
     """
-    def put(self,request):
-        check_out = env.str('CHECKOUT_TIME','15:00:00')
-        strf_now=datetime.strftime(datetime.utcnow(),"%H:%M:%S")
-        
+
+    def put(self, request):
+        check_out = env.str('CHECKOUT_TIME', '18:00:00')
+        strf_now = datetime.strftime(datetime.utcnow(), "%H:%M:%S")
+
         response = {
             "status": '',
-            "data":{},
+            "data": {},
         }
         try:
             if strf_now <= check_out:
-                attendance_record=get_list_or_404(AttendanceRecords,is_checked_out=False,user_id=request.user,checked_in__isnull=False, user_id__is_student=True,date=datetime.today())[0]
-                attendance_record.checked_out=timezone.now()
-                attendance_record.is_checked_out=True
-                attendance_record.save()    
-                res=serializers.serialize('json',[attendance_record])
-                response['data']=json.loads(res)
+                attendance_record = get_list_or_404(AttendanceRecords, is_checked_out=False, user_id=request.user,
+                                                    checked_in__isnull=False, user_id__is_student=True, date=datetime.today())[0]
+                attendance_record.checked_out = timezone.now()
+                attendance_record.is_checked_out = True
+                attendance_record.save()
+                res = serializers.serialize('json', [attendance_record])
+                response['data'] = json.loads(res)
                 response['status'] = 'Checked out earlier'
             elif(strf_now > check_out):
-                attendance_record=get_list_or_404(AttendanceRecords,is_checked_out=False,user_id=request.user,checked_in__isnull=False, user_id__is_student=True,date=datetime.today())[0]
-                attendance_record.checked_out=timezone.now()
-                attendance_record.is_checked_out=True
-                attendance_record.save()           
-                res=serializers.serialize('json',[attendance_record])                
-                response['data']=json.loads(res)
+                attendance_record = get_list_or_404(AttendanceRecords, is_checked_out=False, user_id=request.user,
+                                                    checked_in__isnull=False, user_id__is_student=True, date=datetime.today())[0]
+                attendance_record.checked_out = timezone.now()
+                attendance_record.is_checked_out = True
+                attendance_record.save()
+                res = serializers.serialize('json', [attendance_record])
+                response['data'] = json.loads(res)
                 response['status'] = 'Checked out within allowed time'
             return Response(response, status=status.HTTP_200_OK)
 
         except Http404:
-            message={"error":[]}
-            if AttendanceRecords.objects.filter(is_checked_in=False,date=datetime.today(),user_id__is_student=True):
-                message.get("error").append("Cannot checkout if you did not checkin")
+            message = {"error": []}
+            if AttendanceRecords.objects.filter(is_checked_in=False, date=datetime.today(), user_id__is_student=True):
+                message.get("error").append(
+                    "Cannot checkout if you did not checkin")
             if AttendanceRecords.objects.filter(user_id__is_student=False):
                 message.get("error").append("Student account not verified!")
             if AttendanceRecords.objects.filter(is_checked_out=True, date=datetime.today()):
                 message.get("error").append("Cannot checkout more than once!")
-            if len(AttendanceRecords.objects.filter(user_id=request.user,date=datetime.today()))==0:
-                message.get("error").append("Cannot find attendace record matching your profile!")
-
-            return Response(message, status=status.HTTP_404_NOT_FOUND)                        
+            if len(AttendanceRecords.objects.filter(user_id=request.user, date=datetime.today())) == 0:
+                message.get("error").append(
+                    "Cannot find attendace record matching your profile!")
+            return Response(message, status=status.HTTP_404_NOT_FOUND)
                      
 
 class SingleUserRegistrationView(generics.CreateAPIView):
@@ -346,3 +350,29 @@ class SingleUserRegistrationView(generics.CreateAPIView):
             return Response(message[1], status=status.HTTP_400_BAD_REQUEST )
         serializer.save()
         return Response(message[0], status= status.HTTP_201_CREATED)
+
+
+class RetrieveAttendanceRecordsView(APIView):
+    """
+    Retrieves attendance records and their corresponding comments.
+    args:
+        valid token
+        user_id
+        date range
+    """
+    serializer_class = AttendanceRecordsSerializer
+    serializer= AttendanceCommentSerializer
+    def get(self,request):
+        records=[]        
+        start_date= convert_date(self.request.query_params.get("from_date"))
+        to_date= convert_date(self.request.query_params.get("to_date"))
+        attendance_records= AttendanceRecords.objects.filter(date__range=[to_date,start_date],user_id=self.request.query_params.get("user_id",request.user))
+        for record in attendance_records:
+            serializer = self.serializer_class(record)
+            ready_data={}
+            ready_data.update({record.date.strftime("%A"):serializer.data})
+            serialized_comments=self.serializer(AttendanceComment.objects.filter(user_id=User.objects.get(id=self.request.query_params.get("user_id",request.user)),record=record),many=True,allow_empty=True)
+            ready_data.get(record.date.strftime("%A")).update({"comments":serialized_comments.data})
+            records.append(ready_data)
+
+        return Response(records,status=status.HTTP_200_OK)                                         

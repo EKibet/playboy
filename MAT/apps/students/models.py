@@ -5,6 +5,7 @@ from MAT.apps.authentication.models import User
 from MAT.apps.common.base import CommonFieldsMixin
 
 
+
 class AttendanceRecords(CommonFieldsMixin):
     user_id = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     is_present = models.BooleanField(default=False)
@@ -15,6 +16,7 @@ class AttendanceRecords(CommonFieldsMixin):
     checked_out = models.DateTimeField(null=True, blank=True)
     date =  models.DateField(default=datetime.date.today)
 
+
 class AttendanceComment(CommonFieldsMixin):
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     text = models.TextField()
@@ -23,3 +25,4 @@ class AttendanceComment(CommonFieldsMixin):
     seen = models.BooleanField(default=False)
     check_out_comment = models.BooleanField(default=False)
     check_in_comment = models.BooleanField(default=False)
+    date =  models.DateField(default=datetime.date.today)
