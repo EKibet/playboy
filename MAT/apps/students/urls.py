@@ -19,8 +19,6 @@ urlpatterns = [
          name='attendance_checkin'),
     path('students/check-out/', views.AttendanceCheckoutApiView.as_view(),
          name='attendance_checkout'),
-    path('students/singleuser/registration',
-         views.SingleUserRegistrationView.as_view(), name='SingleUserRegistration'),
     path('students/verify/<str:token>', views.StudentVerificationAPIVIew.as_view(),
          name='student_verification'),
     path('comments/<int:record_id>', comments_views.CommentListAPIView.as_view(),

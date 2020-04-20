@@ -9,7 +9,7 @@ class TestRegistration:
 
     @pytest.mark.django_db
     def test_cannot_register_user_without_token(self,new_user, client):
-        response = client.post(reverse('students:SingleUserRegistration'),{
+        response = client.post(reverse('authentication:SingleUserRegistration'),{
                                 "first_name": "chris",
                                 "last_name": "karimi",
                                 "username":"chris",
@@ -21,7 +21,7 @@ class TestRegistration:
     def test_cannot_register_user_with_valid_token_but_not_admin(self,get_or_create_token, client):
         token = get_or_create_token
         client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
-        response = client.post(reverse('students:SingleUserRegistration'),{
+        response = client.post(reverse('authentication:SingleUserRegistration'),{
                                 "first_name": "chris",
                                 "last_name": "karimi",
                                 "username":"chris",
@@ -30,22 +30,50 @@ class TestRegistration:
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
     @pytest.mark.django_db
-    def test_successful_registration_with_valid_token_and_admin_role(self,get_or_create_admin_token, client):
+    def test_successful_registration_with_valid_token_and_staff_role(self,get_or_create_admin_token, client):
         token = get_or_create_admin_token
         client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
-        response = client.post(reverse('students:SingleUserRegistration'),{
+        url = reverse('authentication:SingleUserRegistration')
+
+        user = {
                                 "first_name": "chris",
                                 "last_name": "karimi",
                                 "username":"chris",
                                 "email":"admin@gmail.com",
-                                "password":"12345"}, format='json')
+                                "password":"12345",
+                                "role":"staff"
+    }
+
+
+        response = client.post(url,data=json.dumps(user),content_type='application/json')
+
+        assert response.status_code == status.HTTP_201_CREATED
+
+    @pytest.mark.django_db
+    def test_successful_registration_with_valid_token_and_student_role(self,get_or_create_admin_token, client):
+        token = get_or_create_admin_token
+        client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
+        url = reverse('authentication:SingleUserRegistration')
+
+        user = {
+                                "first_name": "chris",
+                                "last_name": "karimi",
+                                "username":"chris",
+                                "email":"admin@gmail.com",
+                                "password":"12345",
+                                "role":"student"
+    }
+
+
+        response = client.post(url,data=json.dumps(user),content_type='application/json')
+
         assert response.status_code == status.HTTP_201_CREATED
 
     @pytest.mark.django_db
     def test_user_registration_fails_without_password(self, client, new_user, get_or_create_admin_token):
         token = get_or_create_admin_token
         client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
-        response = client.post(reverse('students:SingleUserRegistration'),{
+        response = client.post(reverse('authentication:SingleUserRegistration'),{
                                 "first_name": "chris",
                                 "last_name": "karimi",
                                 "username":"chris",
@@ -57,7 +85,7 @@ class TestRegistration:
     def test_user_registration_fails_without_email(self, client, new_user, get_or_create_admin_token):
         token = get_or_create_admin_token
         client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
-        response = client.post(reverse('students:SingleUserRegistration'),{
+        response = client.post(reverse('authentication:SingleUserRegistration'),{
                                 "first_name": "chris",
                                 "last_name": "karimi",
                                 "username":"chris",
@@ -69,7 +97,7 @@ class TestRegistration:
     def test_user_registration_fails_with_wrong_email_format(self, client, new_user, get_or_create_admin_token):
         token = get_or_create_admin_token
         client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
-        response = client.post(reverse('students:SingleUserRegistration'),{
+        response = client.post(reverse('authentication:SingleUserRegistration'),{
                                 "first_name": "jdnwod",
                                 "last_name": "cdncwoer",
                                 "username":"kjnf",
@@ -81,7 +109,7 @@ class TestRegistration:
     def test_user_registration_fails_with_password_length_below_four(self, client, new_user, get_or_create_admin_token):
         token = get_or_create_admin_token
         client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
-        response = client.post(reverse('students:SingleUserRegistration'),{
+        response = client.post(reverse('authentication:SingleUserRegistration'),{
                                 "first_name": "jdnwod",
                                 "last_name": "cdncwoer",
                                 "username":"kjnf",
@@ -93,7 +121,7 @@ class TestRegistration:
     def test_user_registration_fails_without_username(self, client, new_user, get_or_create_admin_token):
         token = get_or_create_admin_token
         client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
-        response = client.post(reverse('students:SingleUserRegistration'),{
+        response = client.post(reverse('authentication:SingleUserRegistration'),{
                                 "first_name": "chris",
                                 "last_name": "karimi",
                                 "username":"",
@@ -105,7 +133,7 @@ class TestRegistration:
     def test_user_registration_fails_without_firstname(self, client, new_user, get_or_create_admin_token):
         token = get_or_create_admin_token
         client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
-        response = client.post(reverse('students:SingleUserRegistration'),{
+        response = client.post(reverse('authentication:SingleUserRegistration'),{
                                 "first_name": "",
                                 "last_name": "karimi",
                                 "username":"kjnf",
@@ -117,7 +145,7 @@ class TestRegistration:
     def test_user_registration_fails_without_lasttname(self, client, new_user, get_or_create_admin_token):
         token = get_or_create_admin_token
         client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
-        response = client.post(reverse('students:SingleUserRegistration'),{
+        response = client.post(reverse('authentication:SingleUserRegistration'),{
                                 "first_name": "jdnwod",
                                 "last_name": "",
                                 "username":"kjnf",
