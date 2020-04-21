@@ -154,14 +154,15 @@ class SendPasswordResetEmail(APIView):
     def post(self, request):
 
         try:
-            email = request.data.get('email')
+            provided_email = request.data.get('email')
 
-            user_email = User.objects.get(email=email)
+            user = User.objects.get(email=provided_email)
+            email = user.email
 
             subject = 'Password Reset'
             message = 'Your password reset request has been received '
 
-            recipient = [user_email.email]
+            recipient = [email]
             payload = {'email': recipient,
                        "iat": datetime.now(),
                        "exp": datetime.utcnow()
@@ -172,7 +173,10 @@ class SendPasswordResetEmail(APIView):
             url = '/students/password/reset/{}'.format(token)
 
             template = 'password_reset.html'
-            send_link(user_email.email, subject, template, url, token)
+
+            kwargs = {"email":email, "subject":subject, "template":template, "url":url, "token":token}
+            send_link(**kwargs)
+            
             message = {
                 "message": "email has been successfully sent",
                 "token": token

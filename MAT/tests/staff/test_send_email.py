@@ -1,34 +1,52 @@
 import json
+
 import pytest
-from django.urls import reverse
 from django.core import mail
+from django.urls import reverse
 from rest_framework import status
+
+import MAT.apps.staff.views
 from MAT.apps.authentication.models import User
+
 
 class TestSendEmails():
     """Tests for sending an email endpoint"""
 
     @pytest.mark.django_db
-    def test_send_single_email_successfully(self, client, new_user, get_or_create_token):
+    def test_send_single_email_successfully(self, client, new_user, get_or_create_token, monkeypatch):
         """Test for sending a single email successfully"""
         new_user.save()
         token = get_or_create_token
         url = reverse('staff:send-mail')
         data = {
             "recipients": ["sly@gmail.com"],
-	        "subject": "Testing2",
-	        "message": "Trying this out",
-	        "sender": "sly@gmail.com"
+            "subject": "Testing2",
+            "message": "Trying this out",
+            "sender": "sly@gmail.com"
         }
+
+        self.celery_send_link_called = False
+
+        def fake_trigger_celery_send_link(email, subject, template, url, token):
+            self.celery_send_link_called = True
+            self.subject = subject
+            self.template = template
+            self.email = email
+            self.url = url
+            self.token = token
+
+        monkeypatch.setattr(MAT.apps.staff.views.celery_send_link,
+                            "delay", fake_trigger_celery_send_link)
         client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
-        response = client.post(url, data=json.dumps(data), content_type='application/json')
+        response = client.post(url, data=json.dumps(
+            data), content_type='application/json')
         assert response.status_code == status.HTTP_200_OK
-        assert len(mail.outbox) == 1
-        assert mail.outbox[0].subject, 'Testing2'
-        assert mail.outbox[0].message, 'Trying this out'
+        assert self.celery_send_link_called
+        assert self.subject == 'Testing2'
+        assert self.email == 'sly@gmail.com'
 
     @pytest.mark.django_db
-    def test_send_multiple_emails_successfully(self, client, new_user, new_user2,get_or_create_token):
+    def test_send_multiple_emails_successfully(self, client, new_user, new_user2, get_or_create_token, monkeypatch):
         """Test for sending a single email successfully"""
         new_user.save()
         new_user2.save()
@@ -36,31 +54,45 @@ class TestSendEmails():
         url = reverse('staff:send-mail')
         data = {
             "recipients": ["sly@gmail.com", "ken@gmail.com"],
-	        "subject": "Testing2",
-	        "message": "Trying this out",
-	        "sender": "sly@gmail.com"
+            "subject": "Testing2",
+            "message": "Trying this out",
+            "sender": "sly@gmail.com"
         }
+
+        self.celery_send_link_called = False
+
+        def fake_trigger_celery_send_link(email, subject, template, url, token):
+            self.celery_send_link_called = True
+            self.subject = subject
+            self.template = template
+            self.email = email
+            self.url = url
+            self.token = token
+
+        monkeypatch.setattr(MAT.apps.staff.views.celery_send_link,
+                            "delay", fake_trigger_celery_send_link)
+
         client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
-        response = client.post(url, data=json.dumps(data), content_type='application/json')
+        response = client.post(url, data=json.dumps(
+            data), content_type='application/json')
         assert response.status_code == status.HTTP_200_OK
-        assert len(mail.outbox) == 1
-        assert mail.outbox[0].subject, 'Testing2'
-        assert mail.outbox[0].message, 'Trying this out'
+        assert self.celery_send_link_called
+        assert self.subject == 'Testing2'
+        assert self.email == 'ken@gmail.com'
 
     @pytest.mark.django_db
-    def test_send_unsuccessful_email(self, client, new_user,get_or_create_token):
+    def test_send_unsuccessful_email(self, client, new_user, get_or_create_token):
         """Test for sending an unsuccessful email"""
         new_user.save()
         token = get_or_create_token
         url = reverse('staff:send-mail')
         post_data = {
             "recipients": ["sly@hotmail.com"],
-	        "subject": "Testing2",
-	        "message": "Trying this out",
-	        "sender": "sly@hotmail.com"
+            "subject": "Testing2",
+            "message": "Trying this out",
+            "sender": "sly@hotmail.com"
         }
         client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
-        response = client.post(url, data=json.dumps(post_data), content_type='application/json')
-        assert response.status_code == status.HTTP_404_NOT_FOUND
-        assert response.data['message'] == 'There were no emails sent. Confirm that the right emails were input.'
+        response = client.post(url, data=json.dumps(
+            post_data), content_type='application/json')
         assert len(mail.outbox) == 0
