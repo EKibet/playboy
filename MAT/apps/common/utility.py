@@ -5,31 +5,30 @@ from django.template.loader import render_to_string
 from rest_framework.response import Response
 from rest_framework import permissions
 
-
-from MAT.config.settings.base import EMAIL_HOST_USER
-
+from MAT.config.settings.base import EMAIL_HOST_USER, env
 
 
-def send_link(email, subject, template, url, *args):
-    """A utility to send emails that is reusable"""
-    token = ''
-    saved_args = locals()
-    if saved_args['template'] == 'student_invite_template.html':
-        token = saved_args['args'][0]
+
+def send_link(**kwargs):
+    """A utility to send emails that is reusable email, subject, template, url, """
+    token = kwargs.get('token')
+    email = kwargs.get('email')
+    subject =kwargs.get('subject')
+    url = kwargs.get('url')
+    template = kwargs.get('template')
+    
     from_email, to_email = EMAIL_HOST_USER, email
-    password = os.getenv('STUDENTS_PASSWORD')
-    site_url = os.getenv('APP_BASE_URL')
-    link_url = str(site_url) + \
-        url + '{}/'.format(token)
-    link_article = url
+    password = env.str('STUDENTS_PASSWORD')
+    base_url = env.str('APP_BASE_URL')
+
+    link = '{0}{1}{2}/'.format(str(base_url),str(url), str(token))
+
     message = render_to_string(
         template, {
             'user': to_email,
-            'domain': link_url,
             'token': token,
             'username': to_email,
-            'link': link_url,
-            'link_article': link_article,
+            'link': link,
             'password': password,
         })
     send_mail(subject, '', from_email,
