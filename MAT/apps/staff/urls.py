@@ -8,5 +8,6 @@ app_name = 'staff'
 
 urlpatterns = [
     path('staff/', views.StaffListing.as_view(), name = 'stafflist'),
+    path('staff/<int:id>/', views.SingleStaffListing.as_view(), name = 'staff_details'),
     path('staff/send-mail', SendEmails.as_view(), name='send-mail')
 ]
