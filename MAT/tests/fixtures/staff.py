@@ -4,7 +4,7 @@ import pytest
 from MAT.apps.authentication.models import User
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='function')
 def new_staff():
     params = {
         "first_name": "chris",

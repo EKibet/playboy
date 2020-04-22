@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 
 import jwt
 from django.core.mail import send_mail
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -59,6 +59,37 @@ class SendEmails(APIView):
 
 
 class StaffListing(generics.ListAPIView):
+    """
+    Returns the list of staff using the serializer.
+    """
     queryset = User.objects.filter(is_staff=True)
     serializer_class = StaffListSerializer
     renderer_classes = (StaffJSONRenderer,)
+
+class SingleStaffListing(APIView):
+    """
+    API view that allows read,delete , update(patch) operations on a 
+    single instance.
+    Args:
+        id: The staff user's id
+
+    """
+    renderer_classes = (StaffJSONRenderer,)
+
+    def get(self, request, *args, **kwargs):
+        staff = get_object_or_404(User, is_staff=True, pk=kwargs['id'])
+        serializer = StaffListSerializer(staff)
+        return Response(serializer.data)
+
+    def patch(self, request, *args, **kwargs):
+        staff = get_object_or_404(User, is_staff=True, pk=kwargs['id'])
+        serializer = StaffListSerializer(staff, data=request.data, partial=True)
+        if serializer.is_valid():
+            staff = serializer.save()
+            return Response(StaffListSerializer(staff).data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, *args, **kwargs):
+        staff = get_object_or_404(User, is_staff=True, pk=kwargs['id'])
+        staff.delete()
+        return Response("staff deleted", status=status.HTTP_204_NO_CONTENT)
