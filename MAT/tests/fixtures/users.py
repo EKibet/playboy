@@ -30,6 +30,17 @@ def new_user2():
         "is_active": "True"
     }
     return User(**params)
+
+@pytest.fixture(scope='module')
+def new_user3():
+    params = {
+        "username": "wookie",
+        "email": "wookie@gmail.com",
+        "password": make_password('wookie'),
+        "is_active": "True",
+        "is_student":"True"
+    }
+    return User(**params)    
 @pytest.fixture(scope='function')
 def new_admin_user(django_db_blocker):
     with django_db_blocker.unblock():

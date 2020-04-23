@@ -242,12 +242,14 @@ class AttendanceRecordsAPIView(APIView):
             "error": ''
         }
         try:
+            
             if strf_now <= punctual_time_string:
                 attendance_record = get_list_or_404(
                     AttendanceRecords, is_checked_in=False, user_id=request.user, user_id__is_student=True, date=datetime.today())[0]
                 attendance_record.is_present = True
                 attendance_record.checked_in = timezone.now()
                 attendance_record.is_checked_in = True
+                attendance_record.checked_in_time = datetime.now()
                 attendance_record.is_late = False
                 attendance_record.save()
                 res = serializers.serialize('json', [attendance_record])
@@ -259,9 +261,10 @@ class AttendanceRecordsAPIView(APIView):
                 attendance_record = get_list_or_404(
                     AttendanceRecords, user_id=request.user, is_checked_in=False, user_id__is_student=True, date=datetime.today())[0]
                 attendance_record.is_present = True
-                attendance_record.checked_in = timezone.now()
+                attendance_record.checked_in = datetime.now()
                 attendance_record.is_late = True
                 attendance_record.is_checked_in = True
+                attendance_record.checked_in_time = datetime.now()
                 attendance_record.save()
                 res = serializers.serialize('json', [attendance_record])
                 response['data'] = json.loads(res)
@@ -300,8 +303,10 @@ class AttendanceCheckoutApiView(APIView):
             if strf_now <= check_out:
                 attendance_record = get_list_or_404(AttendanceRecords, is_checked_out=False, user_id=request.user,
                                                     checked_in__isnull=False, user_id__is_student=True, date=datetime.today())[0]
-                attendance_record.checked_out = timezone.now()
+                attendance_record.checked_out = datetime.now()
                 attendance_record.is_checked_out = True
+                attendance_record.checked_out_time = datetime.now()                
+
                 attendance_record.save()
                 res = serializers.serialize('json', [attendance_record])
                 response['data'] = json.loads(res)
@@ -311,6 +316,8 @@ class AttendanceCheckoutApiView(APIView):
                                                     checked_in__isnull=False, user_id__is_student=True, date=datetime.today())[0]
                 attendance_record.checked_out = timezone.now()
                 attendance_record.is_checked_out = True
+                attendance_record.checked_out_time = datetime.now()                
+
                 attendance_record.save()
                 res = serializers.serialize('json', [attendance_record])
                 response['data'] = json.loads(res)

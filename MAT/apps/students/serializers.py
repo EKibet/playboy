@@ -20,7 +20,7 @@ class StudentSerializer(serializers.ModelSerializer):
 class AttendanceRecordsSerializer(serializers.ModelSerializer):
     class Meta:
         model = AttendanceRecords
-        fields = (  'user_id','is_present','is_late','checked_in','is_checked_in','is_checked_out','checked_out','date',)
+        fields = ('user_id','is_present','is_late','checked_in','is_checked_in','is_checked_out','checked_out','date','checked_in_time','checked_out_time')
 class StudentRegistrationSerializer(serializers.ModelSerializer):
 
     first_name = serializers.CharField(max_length=100) 
