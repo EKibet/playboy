@@ -8,7 +8,7 @@ logger = get_task_logger(__name__)
 
 
 
-@periodic_task(run_every=(crontab(hour=4, minute=30)), name="cronjob", ignore_result=True)
+@periodic_task(run_every=(crontab(day_of_week="1-5",hour=4, minute=30)), name="cronjob", ignore_result=True)
 def create_students_records():
     logger.info("create students records")
     return attendance_records_cronjob_creator()

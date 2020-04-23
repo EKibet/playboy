@@ -15,6 +15,9 @@ class AttendanceRecords(CommonFieldsMixin):
     is_checked_out = models.BooleanField(default=False)
     checked_out = models.DateTimeField(null=True, blank=True)
     date =  models.DateField(default=datetime.date.today)
+    checked_in_time = models.TimeField(null=True)
+    checked_out_time = models.TimeField(null=True)
+    
 
 
 class AttendanceComment(CommonFieldsMixin):
