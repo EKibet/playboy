@@ -6,9 +6,9 @@ from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework import status
 
 
-from .models import AttendanceComment, AttendanceRecords
-from .serializers import AttendanceCommentSerializer
-from .renderers import CommentJSONRenderer
+from MAT.apps.students.models import AttendanceComment, AttendanceRecords
+from MAT.apps.students.serializers import AttendanceCommentSerializer
+from MAT.apps.students.renderers import CommentJSONRenderer
 from MAT.apps.authentication.models import User
 
 
@@ -30,7 +30,7 @@ class CommentsCreatePIView(APIView):
         record.is_late = is_late
         record.is_present = is_present
         record.save()
-        
+
         serializer = self.serializer_class(
             data=request.data)
         serializer.is_valid(raise_exception=True)
