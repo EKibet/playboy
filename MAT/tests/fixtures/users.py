@@ -97,6 +97,20 @@ def get_or_create_token(db,client,new_user):
     token =  response.data['access']
     return token
 
+@pytest.fixture
+def profile_token(db,client,new_user):
+    new_user.save()
+    url = reverse('authentication:token_obtain_pair')
+    my_data =  {
+        "email": "sly@gmail.com",
+        "password": "sly123"
+	}
+    response = client.post(url,data=json.dumps(my_data),
+                                   content_type='application/json')
+    token =  response.data['access']
+    user_id = new_user.id
+    return token, user_id
+
 @pytest.fixture(scope='function')
 def get_or_create_admin_token(db,client,new_admin_user):
     new_admin_user.save()
