@@ -24,9 +24,9 @@ class ProfileDetail(APIView):
     serializer_class = ProfileSerializer
     renderer_classes = (ProfileJSONRenderer,)
 
-    def get(self, request, username):
+    def get(self, request, id):
         try:
-            profile = UserProfile.objects.get(user__username=username)
+            profile = UserProfile.objects.get(user__id=id)
         except:
             message = {"error": "Profile does not exist."}
             return Response(message, status=status.HTTP_404_NOT_FOUND)
@@ -35,10 +35,10 @@ class ProfileDetail(APIView):
             instance=profile, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def put(self, request, username):
-        instance_profile = UserProfile.objects.get(user__username=username)
-        if instance_profile.user.username != request.user.username:
-                data = {'error': 'You are not allowed to edit or another persons profile'}
+    def put(self, request, id):
+        instance_profile = UserProfile.objects.get(user__id=id)
+        if instance_profile.user.id != request.user.id:
+                data = {'error': 'You are not allowed to edit another persons profile'}
                 return Response(data, status.HTTP_403_FORBIDDEN)
         data = request.data
         serializer = self.serializer_class(
