@@ -221,3 +221,11 @@ CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Africa/Nairobi'
+
+# Cloudinary settings for Django.
+CLOUDINARY = {
+    'cloud_name': os.getenv('CLOUD_NAME'),
+    'api_key': os.getenv('API_KEY'),
+    'api_secret': os.getenv('API_SECRET'),
+}
+CLOUDINARY_FOLDER = os.getenv('CLOUD_FOLDER')
