@@ -34,17 +34,19 @@ class SendPasswordResetEmail(APIView):
             payload = {'email': recipient,
                        "iat": datetime.now(),
                        "exp": datetime.utcnow()
-                       + timedelta(minutes=20)
+                              + timedelta(minutes=20)
                        }
             token = jwt.encode(payload,
-                               env.str('SECRET_KEY'), algorithm='HS256').decode('utf-8')
+                               env.str('SECRET_KEY'),
+                               algorithm='HS256').decode('utf-8')
             url = '/confirm-password/{}'.format(token)
 
             template = 'password_reset.html'
 
-            kwargs = {"email":email, "subject":subject, "template":template, "url":url, "token":token}
+            kwargs = {"email": email, "subject": subject, "template": template,
+                      "url": url, "token": token}
             send_link(**kwargs)
-            
+
             message = {
                 "message": "email has been successfully sent",
                 "token": token
@@ -88,7 +90,7 @@ class ResetPasswordView(APIView):
                     "message": "The passwords do not match"
                 }
                 return Response(message, status=status.HTTP_400_BAD_REQUEST)
-        except User.DoesNotExist:               # pragma: no cover
+        except User.DoesNotExist:  # pragma: no cover
             message = {
                 'message': 'User does not exist'
             }

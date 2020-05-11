@@ -8,6 +8,7 @@ Moringa Attendance Tracker
 The **mat-api** is the backbone of an application for viewing classroom attendance.
 The api provides features for registering users(students and TMs) and viewing attendance records for students.
 
+[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/66468e9a7e2af09171dd)
 
 ## Development set up
 
@@ -125,6 +126,11 @@ The api provides features for registering users(students and TMs) and viewing at
 -   After undertaking the task, a fully detailed pull request shall be submitted to the owners of this repository for review.
 -   If there any changes requested ,it is expected that these changes shall be effected and the pull request resubmitted for review.Once all the changes are accepted, the pull request shall be closed and the changes merged into `development` by the owners of this repository.
 -   There should be only one commit per Merge Request, to achieve this use `git commit --amend`  
+
+
+### Code Quality Conventions
+
+Please refer to the best practices Wiki: https://gitlab.com/Moringa-School/mat-api/-/wikis/Moringa-Best-Practices-Wiki
 
 
 
