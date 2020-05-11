@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from MAT.apps.authentication.models import User
+from MAT.apps.common.pagination import CustomPagination
 from MAT.config.settings.base import env
 
 from MAT.apps.students.serializers import StudentSerializer

@@ -167,3 +167,4 @@ class RetrieveAttendanceRecordsView(APIView):
             records.append(ready_data)
 
         return Response(records,status=status.HTTP_200_OK)
+
