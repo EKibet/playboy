@@ -24,6 +24,7 @@ sentry-sdk = "*"
 django-simple-history = "*"
 celery = "*"
 redis = "*"
+cloudinary = "*"
 
 [requires]
 python_version = "3.7"

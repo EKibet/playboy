@@ -5,7 +5,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-# Create your views here.
+from MAT.apps.common.utility import make_cloudinary_url
+
 from .models import UserProfile
 from .renderers import ProfileJSONRenderer, ProfilesJSONRenderer
 from .serializers import ProfileSerializer
@@ -38,8 +39,8 @@ class ProfileDetail(APIView):
     def put(self, request, id):
         instance_profile = UserProfile.objects.get(user__id=id)
         if instance_profile.user.id != request.user.id:
-                data = {'error': 'You are not allowed to edit another persons profile'}
-                return Response(data, status.HTTP_403_FORBIDDEN)
+            data = {'error': 'You are not allowed to edit another persons profile'}
+            return Response(data, status.HTTP_403_FORBIDDEN)
         data = request.data
         serializer = self.serializer_class(
             instance=instance_profile, data=data, partial=True,
@@ -48,4 +49,12 @@ class ProfileDetail(APIView):
         )
         serializer.is_valid(raise_exception=True)
         serializer.save()
+
+        if request.FILES:
+            profile_picture = request.FILES["profile_picture"]
+            secure_url = make_cloudinary_url(
+                profile_picture, request.user.username)
+            instance_profile.image = secure_url
+            instance_profile.save()
+
         return Response(serializer.data, status=status.HTTP_200_OK)
