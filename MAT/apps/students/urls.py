@@ -1,7 +1,6 @@
 from django.urls import path
 
 from MAT.apps.students.views import students, attendance, comments_views
-from MAT.apps.students.views.attendance import SingleUserRegistrationView
 from MAT.apps.students.views.password_reset import SendPasswordResetEmail, \
     ResetPasswordView
 from MAT.apps.students.views.verification import StudentVerificationAPIVIew
@@ -23,10 +22,6 @@ urlpatterns = [
          name='attendance_checkin'),
     path('students/check-out/', attendance.AttendanceCheckoutApiView.as_view(),
          name='attendance_checkout'),
-
-    path('students/singleuser/registration', SingleUserRegistrationView.as_view(),
-         name='SingleUserRegistration'),
-
     path('students/verify/<str:token>', StudentVerificationAPIVIew.as_view(),
          name='student_verification'),
 

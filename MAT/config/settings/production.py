@@ -1,5 +1,6 @@
 from corsheaders.defaults import default_headers
 from .base import *
+from sentry_sdk.integrations.celery import CeleryIntegration
 
 SECRET_KEY = env('SECRET_KEY')
 SESSION_COOKIE_SECURE = True
@@ -21,6 +22,6 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 # Initialize Sentry
 sentry_sdk.init(
     dsn=env.str('SENTRY_DSN'),
-    integrations=[DjangoIntegration()],
+    integrations=[DjangoIntegration(), CeleryIntegration()],
     send_default_pii=True
 )

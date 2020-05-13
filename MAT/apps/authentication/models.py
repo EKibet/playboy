@@ -9,6 +9,8 @@ from simple_history.models import HistoricalRecords
 
 from MAT.apps.common.base import CommonFieldsMixin
 from MAT.apps.cohorts.models import Cohort
+from django.db.models.signals import post_save
+from MAT.apps.authentication.utility import student_cohort_assignment
 
 
 class UserManager(BaseUserManager):
@@ -19,11 +21,12 @@ class UserManager(BaseUserManager):
     All we have to do is override the `create_user` function which we will use
     to create `User` objects.
     """
-
+    
     def create_student(self, username, email, password=None, **kwargs):
         """Create and return a `User` with an email, username and password."""
         first_name = kwargs.get('first_name')
         last_name = kwargs.get('last_name')
+        cohort_name = kwargs.get('cohort')
         if first_name is None:
             raise TypeError('Students must have a first name.')
         if kwargs.get('last_name') is None:
@@ -36,11 +39,10 @@ class UserManager(BaseUserManager):
             raise TypeError('Students must have an email address.')
 
         user = self.model(
-            username=username, email=self.normalize_email(email), first_name=first_name, last_name=last_name)
+            username=username, email=self.normalize_email(email), first_name=first_name, last_name=last_name, cohort=student_cohort_assignment(cohort_name))
         user.set_password(password)
         user.is_student = True
         user.save()
-
         return user
 
     def create_staff(self, username, email, password=None, **kwargs):
@@ -144,3 +146,5 @@ class User(AbstractBaseUser, CommonFieldsMixin, PermissionsMixin):
 
     class Meta:
         ordering = ['-updated_at', '-created_at']
+
+

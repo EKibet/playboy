@@ -25,13 +25,13 @@ class TestCohortCRUD():
     def test_cohort_name_succeeds(self, new_cohort):
         new_cohort.save()
         saved_cohort = Cohort.objects.latest('id')
-        assert str(saved_cohort) == "mc01"
+        assert str(saved_cohort) == "MC01"
 
     @pytest.mark.django_db
     def test_create_cohort_succeeds(self, client, get_or_create_token):
         """Test creating a cohort """
         data = {
-            "name": "MC22"
+            "cohort_name": "MC22"
         }
         token = get_or_create_token
         url = reverse('cohorts:cohorts-list')
@@ -58,7 +58,7 @@ class TestCohortCRUD():
         """Test editing of an existing cohort """
         new_cohort.save()
         update_data = {
-            "name": "MC01"
+            "cohort_name": "MC01"
         }
         token = get_or_create_token
         latest_cohort = Cohort.objects.latest('id')

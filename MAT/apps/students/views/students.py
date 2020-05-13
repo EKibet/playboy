@@ -42,7 +42,7 @@ class StudentInfoUploadView(APIView):  # pragma: no cover
             for row in reader:
                 try:
                     User.objects.create_student(username=row['Username'], email=row['email'],
-                                                password=env.str('STUDENTS_PASSWORD','moringaschool'), first_name=row['first_name'], last_name=row['second_name'],)
+                                                password=env.str('STUDENTS_PASSWORD','moringaschool'), first_name=row['first_name'], last_name=row['second_name'],cohort=row['Class'])
                     stats['created_count'] += 1
                     created_emails.append(row['email'])
                 except IntegrityError:
