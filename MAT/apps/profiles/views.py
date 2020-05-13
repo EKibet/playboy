@@ -10,6 +10,7 @@ from MAT.apps.common.utility import make_cloudinary_url
 from .models import UserProfile
 from .renderers import ProfileJSONRenderer, ProfilesJSONRenderer
 from .serializers import ProfileSerializer
+from MAT.apps.students.utility_functions import calculate_student_attendance
 
 
 class ProfileListView(ListAPIView):
@@ -31,10 +32,11 @@ class ProfileDetail(APIView):
         except:
             message = {"error": "Profile does not exist."}
             return Response(message, status=status.HTTP_404_NOT_FOUND)
-
         serializer = self.serializer_class(
             instance=profile, context={'request': request})
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        response = {'data': serializer.data,
+                'attendance': calculate_student_attendance(serializer.data['user'])}
+        return Response(response, status=status.HTTP_200_OK)
 
     def put(self, request, id):
         instance_profile = UserProfile.objects.get(user__id=id)

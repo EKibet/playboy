@@ -17,7 +17,7 @@ class AttendanceRecords(CommonFieldsMixin):
     date =  models.DateField(default=datetime.date.today)
     checked_in_time = models.TimeField(null=True)
     checked_out_time = models.TimeField(null=True)
-    
+    attendance_number=models.FloatField(default=0)
 
 
 class AttendanceComment(CommonFieldsMixin):

@@ -40,6 +40,7 @@ class AttendanceRecordsAPIView(APIView):
                 attendance_record.checked_in=timezone.now()
                 attendance_record.is_checked_in=True
                 attendance_record.is_late=False
+                attendance_record.attendance_number = attendance_record.attendance_number + 1
                 attendance_record.save()
                 res=serializers.serialize('json',[attendance_record])
                 response['data']=json.loads(res)
@@ -52,6 +53,7 @@ class AttendanceRecordsAPIView(APIView):
                 attendance_record.checked_in=timezone.now()
                 attendance_record.is_late=True
                 attendance_record.is_checked_in=True
+                attendance_record.attendance_number = attendance_record.attendance_number + (2/3)
                 attendance_record.save()
                 res=serializers.serialize('json',[attendance_record])
                 response['data']=json.loads(res)
@@ -140,6 +142,4 @@ class RetrieveAttendanceRecordsView(APIView):
             serialized_comments=self.serializer(AttendanceComment.objects.filter(user_id=User.objects.get(id=self.request.query_params.get("user_id",request.user)),record=record),many=True,allow_empty=True)
             ready_data.get(record.date.strftime("%A")).update({"comments":serialized_comments.data})
             records.append(ready_data)
-
         return Response(records,status=status.HTTP_200_OK)
-
