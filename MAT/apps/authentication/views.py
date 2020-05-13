@@ -36,4 +36,3 @@ class SingleUserRegistrationView(generics.CreateAPIView):
             'message': 'User registered  successfully',
             }
         return Response(message, status= status.HTTP_201_CREATED)
-

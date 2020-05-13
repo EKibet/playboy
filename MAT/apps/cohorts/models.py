@@ -14,3 +14,15 @@ class Cohort(CommonFieldsMixin):
 
     def __str__(self):
         return self.name
+
+    @property
+    def cohort_name(self):
+        return self.name
+
+    @cohort_name.setter
+    def cohort_name(self,value):
+        self.name = ''.join([character for character in value.upper() if value and character.isalnum()])
+    
+
+ 
+

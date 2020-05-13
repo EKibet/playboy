@@ -22,11 +22,12 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(min_length=4, max_length=100,write_only=True)
     roles = [role.value for role in Roles]
     role = serializers.ChoiceField(choices=roles)
+    cohort = serializers.CharField(max_length=100, allow_blank=True, required=False)
 
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'email',
-                  'username','email', 'password','role']
+                  'username','email', 'password','role', 'cohort']
 
 
         extra_kwargs = {

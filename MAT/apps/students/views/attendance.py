@@ -12,8 +12,7 @@ from rest_framework.views import APIView
 
 from MAT.apps.authentication.models import User
 from MAT.apps.students.models import AttendanceRecords, AttendanceComment
-from MAT.apps.students.serializers import AttendanceRecordsSerializer, \
-    StudentRegistrationSerializer, AttendanceCommentSerializer
+from MAT.apps.students.serializers import AttendanceRecordsSerializer, AttendanceCommentSerializer
 from MAT.apps.students.utility_functions import convert_date
 from MAT.config.settings.base import env
 
@@ -118,30 +117,6 @@ class AttendanceCheckoutApiView(APIView):
                 message.get("error").append("Cannot find attendace record matching your profile!")
 
             return Response(message, status=status.HTTP_404_NOT_FOUND)
-
-
-class SingleUserRegistrationView(generics.CreateAPIView):
-    """
-    Allows a staff to create single student's account
-    Args:
-        first_name: the student's first name
-        last_name: the student's last name
-        username: username that will be indexed by the system
-        email: the student's email
-        password: The new account password
-    """
-    permission_classes =[IsAdminUser]
-    serializer_class = StudentRegistrationSerializer
-
-    def post(self, request):
-        serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user_email = request.data.get('email')
-        message = {0:"User created Successfully", 1:"User already exists"}
-        if User.objects.filter(email=user_email).exists():
-            return Response(message[1], status=status.HTTP_400_BAD_REQUEST )
-        serializer.save()
-        return Response(message[0], status= status.HTTP_201_CREATED)
 
 class RetrieveAttendanceRecordsView(APIView):
     """

@@ -9,7 +9,6 @@ autopep8 = "*"
 isort = "*"
 
 [packages]
-django = "*"
 djangorestframework = "*"
 django-environ = "*"
 psycopg2-binary = "*"
@@ -25,6 +24,7 @@ django-simple-history = "*"
 celery = "*"
 redis = "*"
 cloudinary = "*"
+django = "*"
 
 [requires]
 python_version = "3.7"

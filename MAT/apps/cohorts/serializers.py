@@ -4,8 +4,9 @@ from MAT.apps.cohorts.models import Cohort
 
 
 class CohortSerializer(serializers.ModelSerializer):
+    cohort_name = serializers.CharField()
     class Meta:
         model = Cohort
-        fields = ('name', 'id', 'created_at', 'updated_at')
+        fields = ('cohort_name', 'id', 'created_at', 'updated_at')
 
         read_only_fields = ('created_at', 'updated_at', 'id',)
