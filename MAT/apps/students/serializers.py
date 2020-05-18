@@ -20,18 +20,40 @@ class StudentSerializer(serializers.ModelSerializer):
 class AttendanceRecordsSerializer(serializers.ModelSerializer):
     class Meta:
         model = AttendanceRecords
-        fields = ('user_id','is_present','is_late','checked_in','is_checked_in','is_checked_out','checked_out','date','checked_in_time','checked_out_time')
+        fields = ('user_id','is_present','is_late','checked_in','is_checked_in','is_checked_out','checked_out','date','checked_in_time','checked_out_time','attendance_number')
+class StudentRegistrationSerializer(serializers.ModelSerializer):
 
-class AttendanceCommentSerializer(serializers.ModelSerializer): 
+    first_name = serializers.CharField(max_length=100)
+    last_name = serializers.CharField(max_length=100)
+    email = serializers.EmailField(max_length=None, min_length=None, allow_blank=False)
+    username = serializers.CharField(max_length=50)
+    password = serializers.CharField(min_length=4, max_length=100,write_only=True)
+
+    class Meta:
+        model = User
+        fields = ['username','email', 'password',
+            'first_name', 'last_name',]
+        extra_kwargs = {
+            'password': {'write_only': True}
+            }
+
+    def create(self, validated_data):
+        user = User.objects.create_student(
+            **validated_data
+            )
+        return user
+
+
+class AttendanceCommentSerializer(serializers.ModelSerializer):
         user = serializers.SerializerMethodField()
         record = serializers.SerializerMethodField()
 
 
-        def get_user(self, object): 
+        def get_user(self, object):
             user = UserSerializer(object.user_id)
             return user.data
-        
-        def get_record(self, object): 
+
+        def get_record(self, object):
             record_data = AttendanceRecordsSerializer(object.record)
             return record_data.data
 

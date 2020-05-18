@@ -9,6 +9,7 @@ import MAT.apps.profiles.views
 from MAT.apps.authentication.models import User
 from MAT.apps.common.utility import make_cloudinary_url
 from MAT.config.settings.base import BASE_DIR
+from MAT.apps.students.models import AttendanceRecords
 
 
 class TestUserProfile():
@@ -37,10 +38,13 @@ class TestUserProfile():
         token, user_id = profile_token
         url = reverse('profiles:profile_details', kwargs={'id': user_id})
         client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
+        AttendanceRecords.objects.create(
+            user_id=User.objects.get(email="sly@gmail.com"))
         response = client.get(url)
-        assert response.data.get('username') == 'sly'
-        assert response.data.get('student_class') == 'MC21'
-        assert response.data.get('gender') == 'Male'
+        assert response.data['data'].get('username') == 'sly'
+        assert response.data['data'].get('student_class') == 'MC21'
+        assert response.data['data'].get('gender') == 'Male'
+        assert response.data['attendance'].get('attendance_percentage') == 0.0
         assert response.status_code == status.HTTP_200_OK
 
     @pytest.mark.django_db

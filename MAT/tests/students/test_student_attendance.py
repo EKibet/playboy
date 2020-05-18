@@ -25,6 +25,8 @@ class TestAttendanceEndpoints:
         response = client.put(url)
         assert response.status_code == status.HTTP_200_OK
         assert response.data['data'][0]['fields']['is_present'] == True
+        assert response.data['data'][0]['fields']['attendance_number'] == 0.6666666666666666
+        assert response.data['update'] == 'Checked in as late'
 
     @pytest.mark.django_db
     def test_student_can_check_in_on_time_successfully(self, client, get_or_create_token):
@@ -193,7 +195,7 @@ class TestAttendanceEndpoints:
 
     def test_cannot_checkin_find_attendace_record_smatching_your_profile(self,client,get_or_create_token,change_time):
         """Test for student check in"""
-        
+
         token=get_or_create_token
         client.credentials(HTTP_AUTHORIZATION='Bearer '+token)
         url = reverse('students:attendance_checkin')
@@ -212,7 +214,7 @@ class TestAttendanceRecordsRetrieve:
         AttendanceRecords.objects.create(user_id=current_user)
         from_date = datetime.today().date().isoformat()
         to_date = (datetime.today()-timedelta(days=20)).date().isoformat()
-        params={"user_id": current_user.id, "from_date": from_date, "to_date": to_date}        
+        params={"user_id": current_user.id, "from_date": from_date, "to_date": to_date}
         params = urlencode(params)
         url = reverse('students:attendance_records')+"?"+params
         response = client.get(url)
