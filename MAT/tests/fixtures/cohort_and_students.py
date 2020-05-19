@@ -21,6 +21,7 @@ def file_data():
 
     return params
 @pytest.fixture(scope="function")
-def create_attendance_record():
-    current_user=User.objects.get(email="sly@gmail.com")
+def create_attendance_record(new_user):
+    new_user.save()
+    current_user=User.objects.get(email="testy@mail.com")
     return AttendanceRecords.objects.create(user_id=current_user)

@@ -14,7 +14,7 @@ class TestSendEmails():
         new_user.save()
         url = reverse('students:SendPasswordResetEmail')
         data = {
-            "email": "sly@gmail.com"
+            "email": "testy@mail.com"
         }
         response = client.post(url, data=json.dumps(
             data), content_type='application/json')
@@ -50,7 +50,7 @@ class TestSendEmails():
         client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
         url = reverse('students:SendPasswordResetEmail')
         data = {
-            "email": "sly@gmail.com"
+            "email": "testy@mail.com"
         }
         response = client.post(url, data=json.dumps(
             data), content_type='application/json')

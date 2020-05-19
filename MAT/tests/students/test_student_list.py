@@ -33,7 +33,7 @@ class TestStudentsList:
         client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
         new_student.save()
         url = reverse('students:student_details', kwargs={
-                      'email': 'test_user@gmail.com'})
+                      'email': 'test@mail.com'})
 
         response = client.get(url)
         assert response.status_code == status.HTTP_200_OK
@@ -44,7 +44,7 @@ class TestStudentsList:
         token = get_or_create_token
         client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
         url = reverse('students:student_details', kwargs={
-                      'email': 'test_user@gmail.com'})
+                      'email': 'siwezani@mail.com'})
         response = client.get(url)
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
@@ -57,7 +57,7 @@ class TestStudentsList:
         }
         new_student.save()
         url = reverse('students:student_details', kwargs={
-                      'email': 'test_user@gmail.com'})
+                      'email': 'test@mail.com'})
         response = client.put(url, data=data)
         assert response.status_code == status.HTTP_200_OK
         assert response.data.get('email') == 'new_email@gmail.com'

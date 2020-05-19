@@ -11,7 +11,7 @@ class TestLogin:
     def test_can_login_with_correct_credentials(self,new_user, client):
         new_user.save()
         response = client.post(reverse('authentication:token_obtain_pair'), {
-                            "email": "sly@gmail.com", "password": "sly123"}, format='json')
+                            "email": "testy@mail.com", "password": "secret"}, format='json')
         assert response.status_code == status.HTTP_200_OK
 
 
@@ -19,14 +19,14 @@ class TestLogin:
     def test_user_login_without_email(self, client, new_user):
         new_user.save()
         response = client.post(reverse('authentication:token_obtain_pair'), {
-                            "email": "", "password": "sly123"}, format='json')
+                            "email": "", "password": "secret"}, format='json')
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     @pytest.mark.django_db
     def test_user_login_without_password(self, client, new_user):
         new_user.save()
         response = client.post(reverse('authentication:token_obtain_pair'), {
-                            "email": "sly@gmail.com", "password": ""}, format='json')
+                            "email": "testy@mail.com", "password": ""}, format='json')
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     @pytest.mark.django_db

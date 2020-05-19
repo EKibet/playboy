@@ -70,7 +70,7 @@ class AttendanceRecordsAPIView(APIView):
                 message.get("error").append("Cannot checkin more than once!")
             if AttendanceRecords.objects.filter(user_id__is_student=False, date=datetime.today()):
                 message.get("error").append("Student account not verified!")
-            if len(AttendanceRecords.objects.filter(user_id=request.user)) == 0:
+            if len(AttendanceRecords.objects.filter(user_id=request.user, date=datetime.today())) == 0:
                 message.get("error").append("Cannot find attendace record matching your profile!")
 
             return Response(message, status=status.HTTP_404_NOT_FOUND)

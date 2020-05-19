@@ -134,15 +134,20 @@ class User(AbstractBaseUser, CommonFieldsMixin, PermissionsMixin):
         Typically, this would be the user's first and last name. Since we do
         not store the user's real name, we return their username instead.
         """
-        return self.first_name + self.last_name
+        length = 8
+        return (self.first_name).ljust(length) + self.last_name
 
-    def get_short_name(self):
+    @property
+    def get_username(self):
         """
         This method is required by Django for things like handling emails.
         Typically, this would be the user's first name. Since we do not store
         the user's real name, we return their username instead.
         """
-        return self.first_name
+        return self.username
+
+    def get_cohort(self):
+        return self.cohort.name
 
     class Meta:
         ordering = ['-updated_at', '-created_at']

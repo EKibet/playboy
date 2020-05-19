@@ -19,10 +19,10 @@ class TestSendEmails():
         token = get_or_create_token
         url = reverse('staff:send-mail')
         data = {
-            "recipients": ["sly@gmail.com"],
+            "recipients": ["testy@mail.com"],
             "subject": "Testing2",
             "message": "Trying this out",
-            "sender": "sly@gmail.com"
+            "sender": "testy@mail.com"
         }
 
         self.celery_send_link_called = False
@@ -43,7 +43,7 @@ class TestSendEmails():
         assert response.status_code == status.HTTP_200_OK
         assert self.celery_send_link_called
         assert self.subject == 'Testing2'
-        assert self.email == 'sly@gmail.com'
+        assert self.email == 'testy@mail.com'
 
     @pytest.mark.django_db
     def test_send_multiple_emails_successfully(self, client, new_user, new_user2, get_or_create_token, monkeypatch):

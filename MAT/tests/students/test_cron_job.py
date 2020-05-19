@@ -11,15 +11,11 @@ from MAT.apps.authentication.models import User
 from MAT.apps.students.models import AttendanceRecords
 
 
-class TestAttendanceEndpoints:
+class TestCronJob:
     @pytest.mark.django_db
-    def test_student_can_check_in_successfully(self, get_or_create_token,new_user3):
-        """Test for student check in"""
-        created_records = []
+    def test_attendance_cron_creates_records_successfully(self,new_user3):
         new_user3.save()
-
-        token = get_or_create_token
         attendance_records_cronjob_creator()
 
         records = AttendanceRecords.objects.all()        
-        assert  len(records)== 2
+        assert  len(records)== 1
