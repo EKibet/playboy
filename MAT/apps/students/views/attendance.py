@@ -1,18 +1,21 @@
 import json
 from datetime import datetime
 from django.utils import timezone
+from collections import OrderedDict
 
 from django.core import serializers
 from django.http import Http404
 from django.shortcuts import get_list_or_404
-from rest_framework import status, generics
+from rest_framework import generics, status
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from MAT.apps.authentication.models import User
-from MAT.apps.students.models import AttendanceRecords, AttendanceComment
-from MAT.apps.students.serializers import AttendanceRecordsSerializer, AttendanceCommentSerializer
+from MAT.apps.common.pagination import CustomPagination
+from MAT.apps.students.models import AttendanceComment, AttendanceRecords
+from MAT.apps.students.serializers import (AttendanceCommentSerializer,
+                                           AttendanceRecordsSerializer)
 from MAT.apps.students.utility_functions import convert_date
 from MAT.config.settings.base import env
 
@@ -120,7 +123,7 @@ class AttendanceCheckoutApiView(APIView):
 
             return Response(message, status=status.HTTP_404_NOT_FOUND)
 
-class RetrieveAttendanceRecordsView(APIView):
+class RetrieveAttendanceRecordsView(APIView, CustomPagination):
     """
     Retrieves attendance records and their corresponding comments.
     args:
@@ -130,6 +133,15 @@ class RetrieveAttendanceRecordsView(APIView):
     """
     serializer_class = AttendanceRecordsSerializer
     serializer= AttendanceCommentSerializer
+
+    def get_paginated_response(self, data):
+        return Response(OrderedDict([
+            ('count', self.page.paginator.count),
+            ('next', self.get_next_link()),
+            ('previous', self.get_previous_link()),
+            ('results', data)
+        ]))
+
     def get(self,request):
         records=[]
         start_date= convert_date(self.request.query_params.get("from_date"))
@@ -141,5 +153,7 @@ class RetrieveAttendanceRecordsView(APIView):
             ready_data.update({record.date.strftime("%A"):serializer.data})
             serialized_comments=self.serializer(AttendanceComment.objects.filter(user_id=User.objects.get(id=self.request.query_params.get("user_id",request.user)),record=record),many=True,allow_empty=True)
             ready_data.get(record.date.strftime("%A")).update({"comments":serialized_comments.data})
-            records.append(ready_data)
-        return Response(records,status=status.HTTP_200_OK)
+            records.append(ready_data)      
+        paginated_records = self.paginate_queryset(records,request)
+        return self.get_paginated_response(paginated_records)
+
