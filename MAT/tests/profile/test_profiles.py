@@ -39,10 +39,10 @@ class TestUserProfile():
         url = reverse('profiles:profile_details', kwargs={'id': user_id})
         client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
         AttendanceRecords.objects.create(
-            user_id=User.objects.get(email="sly@gmail.com"))
+            user_id=User.objects.get(email="testy@mail.com"))
         response = client.get(url)
-        assert response.data['data'].get('username') == 'sly'
-        assert response.data['data'].get('student_class') == 'MC21'
+        assert response.data['data'].get('username') == 'Batman'
+        assert response.data['data'].get('student_class') == 'MC23'
         assert response.data['data'].get('gender') == 'Male'
         assert response.data['attendance'].get('attendance_percentage') == 0.0
         assert response.status_code == status.HTTP_200_OK

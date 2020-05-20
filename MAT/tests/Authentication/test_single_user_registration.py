@@ -56,14 +56,14 @@ class TestRegistration:
         url = reverse('authentication:SingleUserRegistration')
 
         user = {
-                                "first_name": "chris",
-                                "last_name": "karimi",
-                                "username":"chris",
-                                "email":"admin@gmail.com",
-                                "password":"12345",
-                                "role":"student"
-    }
-
+                "first_name": "chris",
+                "last_name": "karimi",
+                "username":"chris",
+                "email":"admin@gmail.com",
+                "password":"12345",
+                "role":"student",
+                "cohort":"mc23"
+                }
 
         response = client.post(url,data=json.dumps(user),content_type='application/json')
 

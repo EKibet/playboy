@@ -21,7 +21,7 @@ class UserProfile(CommonFieldsMixin):
     fullname = models.CharField(
         max_length=255, default='firstname lastname')
     image = models.URLField(
-        blank=True, null=True, default='https://www.google.com/imgres?imgurl=https%3A%2F%2Fmiro')
+        blank=True, null=True, default='https://res.cloudinary.com/mat-api/image/upload/v1589887195/profilepic_ilcie7.png')
 
     def __str__(self):
         return '{}'.format(self.user.username)
@@ -31,3 +31,10 @@ class UserProfile(CommonFieldsMixin):
 def create_profile_post_receiver(sender, instance, *args, **kwargs):
     if kwargs['created']:
         instance.user_profile = UserProfile.objects.create(user=instance)
+        if instance.is_student:
+            UserProfile.objects.update_or_create(id=instance.user_profile.id, defaults={
+                "fullname": instance.get_full_name,
+                "student_class": instance.cohort.name
+            })
+
+

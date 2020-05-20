@@ -10,18 +10,13 @@ from django.urls import reverse
 from MAT.apps.profiles.models import User, UserProfile
 from MAT.config.settings.base import env
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='function')
 def new_user():
-    params = {
-        "username": "sly",
-        "email": "sly@gmail.com",
-        "password": make_password('sly123'),
-        "is_student":True,
-        "is_verified":True
-    }
-    return User(**params)
+    student = User.objects.create_student(first_name="dave", last_name="kahara",
+				username="Batman", email='testy@mail.com', password='secret',cohort="mc23")
+    return student
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='function')
 def new_user2():
     params = {
         "username": "ken",
@@ -31,16 +26,13 @@ def new_user2():
     }
     return User(**params)
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='function')
 def new_user3():
-    params = {
-        "username": "wookie",
-        "email": "wookie@gmail.com",
-        "password": make_password('wookie'),
-        "is_active": "True",
-        "is_student":"True"
-    }
-    return User(**params)    
+    student = User.objects.create_student(first_name="dave", last_name="kahara",
+				username="Batman", email='testy@mail.com', password='secret',cohort="mc23")
+    student.is_verified = True
+    return student
+    
 @pytest.fixture(scope='function')
 def new_admin_user(django_db_blocker):
     with django_db_blocker.unblock():
@@ -63,8 +55,6 @@ def new_user_with_profile(django_db_blocker, new_user):
         params = {
             "image": "https://www.google.com/imgres?imgurl=https%3A%2F%2Fmiro",
             "gender": "Male",
-            "student_class": "MC21",
-            "fullname": "MC21",
             "user": new_user
         }
         return UserProfile(**params)
@@ -85,12 +75,12 @@ def new_user_with_profile2(django_db_blocker, new_user2):
         return UserProfile(**params)
 
 @pytest.fixture
-def get_or_create_token(db,client,new_user):
-    new_user.save()
+def get_or_create_token(db,client,new_student):
+    new_student.save()
     url = reverse('authentication:token_obtain_pair')
     my_data =  {
-        "email": "sly@gmail.com",
-        "password": "sly123"
+        "email": "test@mail.com",
+        "password": "secret"
 	}
     response = client.post(url,data=json.dumps(my_data),
                                    content_type='application/json')
@@ -102,8 +92,8 @@ def profile_token(db,client,new_user):
     new_user.save()
     url = reverse('authentication:token_obtain_pair')
     my_data =  {
-        "email": "sly@gmail.com",
-        "password": "sly123"
+        "email": "testy@mail.com",
+        "password": "secret"
 	}
     response = client.post(url,data=json.dumps(my_data),
                                    content_type='application/json')

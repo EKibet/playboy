@@ -18,7 +18,7 @@ class TestAttendanceEndpoints:
 
         token = get_or_create_token
         AttendanceRecords.objects.create(
-            user_id=User.objects.get(email="sly@gmail.com"))
+            user_id=User.objects.get(email="test@mail.com"))
 
         client.credentials(HTTP_AUTHORIZATION='Bearer '+token)
         url = reverse('students:attendance_checkin')
@@ -34,7 +34,7 @@ class TestAttendanceEndpoints:
 
         token = get_or_create_token
         AttendanceRecords.objects.create(
-            user_id=User.objects.get(email="sly@gmail.com"))
+            user_id=User.objects.get(email="test@mail.com"))
 
         client.credentials(HTTP_AUTHORIZATION='Bearer '+token)
         url = reverse('students:attendance_checkin')
@@ -60,7 +60,7 @@ class TestAttendanceEndpoints:
         """Test for student check in"""
 
         token = get_or_create_token
-        current_user = User.objects.get(email="sly@gmail.com")
+        current_user = User.objects.get(email="test@mail.com")
         AttendanceRecords.objects.create(user_id=current_user)
         AttendanceRecords.objects.filter(
             user_id=current_user).update(checked_in=timezone.now())
@@ -74,7 +74,7 @@ class TestAttendanceEndpoints:
         """Test for student check in"""
 
         token = get_or_create_token
-        current_user = User.objects.get(email="sly@gmail.com")
+        current_user = User.objects.get(email="test@mail.com")
         AttendanceRecords.objects.create(user_id=current_user)
         AttendanceRecords.objects.filter(
             user_id=current_user).update(checked_in=timezone.now())
@@ -85,10 +85,10 @@ class TestAttendanceEndpoints:
         assert response.status_code == status.HTTP_200_OK
 
     @pytest.mark.django_db
-    def test_check_out_cannot_work_for_nonexistent_attendancerecord(self, client, get_or_create_token):
+    def test_check_out_cannot_work_for_nonexistent_attendancerecord(self, client, get_or_create_admin_token):
         """Test for student check in"""
 
-        token = get_or_create_token
+        token = get_or_create_admin_token
 
         client.credentials(HTTP_AUTHORIZATION='Bearer '+token)
         url = reverse('students:attendance_checkout')
@@ -101,7 +101,7 @@ class TestAttendanceEndpoints:
         """Test for student check in"""
 
         token = get_or_create_token
-        create_attendance_record
+        create_attendance_record.save()
         client.credentials(HTTP_AUTHORIZATION='Bearer '+token)
         url = reverse('students:attendance_checkout')
         response = client.put(url)
@@ -109,24 +109,11 @@ class TestAttendanceEndpoints:
         assert response.data['error'][0] == 'Cannot checkout if you did not checkin'
 
     @pytest.mark.django_db
-    def test_cannot_student_account_not_verified(self, client, get_or_create_token, create_attendance_record):
+    def test_cannot_checkout_more_than_once(self, client, get_or_create_token):
         """Test for student check in"""
 
         token = get_or_create_token
-        create_attendance_record
-        User.objects.filter(email="sly@gmail.com").update(is_student=False)
-        client.credentials(HTTP_AUTHORIZATION='Bearer '+token)
-        url = reverse('students:attendance_checkout')
-        response = client.put(url)
-        assert response.status_code == status.HTTP_404_NOT_FOUND
-        assert response.data['error'][0] == 'Student account not verified!'
-
-    @pytest.mark.django_db
-    def test_cannot_checkout_more_than_once(self, client, get_or_create_token, create_attendance_record):
-        """Test for student check in"""
-
-        token = get_or_create_token
-        current_user = User.objects.get(email="sly@gmail.com")
+        current_user = User.objects.get(email="test@mail.com")
         AttendanceRecords.objects.create(user_id=current_user)
         AttendanceRecords.objects.filter(user_id=current_user).update(
             is_checked_in=True, is_checked_out=True)
@@ -157,23 +144,11 @@ class TestAttendanceEndpoints:
         assert response.status_code == status.HTTP_404_NOT_FOUND
         assert response.data['error'][0] == 'Cannot find attendace record matching your profile!'
 
-    def test_cannot_checkin_student_account_not_verified(self, client, get_or_create_token, create_attendance_record):
-        """Test for student check in"""
-
-        token = get_or_create_token
-        create_attendance_record
-        User.objects.filter(email="sly@gmail.com").update(is_student=False)
-        client.credentials(HTTP_AUTHORIZATION='Bearer '+token)
-        url = reverse('students:attendance_checkin')
-        response = client.put(url)
-        assert response.status_code == status.HTTP_404_NOT_FOUND
-        assert response.data['error'][0] == 'Student account not verified!'
-
     def test_cannot_checkin_more_than_once(self, client, get_or_create_token, create_attendance_record):
         """Test for student check in"""
 
         token = get_or_create_token
-        current_user = User.objects.get(email="sly@gmail.com")
+        current_user = User.objects.get(email="test@mail.com")
         AttendanceRecords.objects.create(user_id=current_user)
         AttendanceRecords.objects.filter(
             user_id=current_user).update(is_checked_in=True)
@@ -210,7 +185,7 @@ class TestAttendanceRecordsRetrieve:
         token = get_or_create_token
 
         client.credentials(HTTP_AUTHORIZATION='Bearer '+token)
-        current_user = User.objects.get(email="sly@gmail.com")
+        current_user = User.objects.get(email="test@mail.com")
         AttendanceRecords.objects.create(user_id=current_user)
         from_date = datetime.today().date().isoformat()
         to_date = (datetime.today()-timedelta(days=20)).date().isoformat()
