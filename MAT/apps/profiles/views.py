@@ -24,7 +24,6 @@ class ProfileListView(ListAPIView):
 
 class ProfileDetail(APIView):
     serializer_class = ProfileSerializer
-    renderer_classes = (ProfileJSONRenderer,)
 
     def get(self, request, id):
         try:

@@ -63,7 +63,7 @@ LOCAL_APPS = (
     'MAT.apps.profiles',
     'MAT.apps.students',
     'MAT.apps.staff',
-    'MAT.apps.cohorts',
+    'MAT.apps.cohorts'
 )
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -126,7 +126,6 @@ REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
     'DEFAULT_PAGINATION_CLASS': 'MAT.apps.common.pagination.CustomPagination'
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators

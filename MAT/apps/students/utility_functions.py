@@ -16,14 +16,17 @@ def calculate_student_attendance(user_id):
         "late": "",
         "absent": ""
     }
-    total_attendance = queryset.aggregate(Sum('attendance_number'))
-    total_records = queryset.count()
-    total_absent_records = queryset.filter(attendance_number=0).count()
-    attendance['absent'] = total_absent_records
-    total_punctual_records = queryset.filter(attendance_number=1).count()
-    attendance['punctual'] = total_punctual_records
-    total_late_records = total_records - total_absent_records - total_punctual_records
-    attendance['late'] = total_late_records
-    attendance_percentage =  total_attendance['attendance_number__sum'] / total_records * 100
-    attendance['attendance_percentage'] = attendance_percentage
-    return attendance
+    error = {"no attendance records found"}
+    if queryset.count() >= 1:
+        total_attendance = queryset.aggregate(Sum('attendance_number'))
+        total_records = queryset.count()
+        total_absent_records = queryset.filter(attendance_number=0).count()
+        attendance['absent'] = total_absent_records
+        total_punctual_records = queryset.filter(attendance_number=1).count()
+        attendance['punctual'] = total_punctual_records
+        total_late_records = total_records - total_absent_records - total_punctual_records
+        attendance['late'] = total_late_records
+        attendance_percentage =  total_attendance['attendance_number__sum'] / total_records * 100
+        attendance['attendance_percentage'] = attendance_percentage
+        return attendance
+    return error
