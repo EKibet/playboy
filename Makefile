@@ -13,6 +13,9 @@ superuser:
 collectstatic:
 	python manage.py collectstatic
 
+shell:
+	python3 manage.py shell
+
 set_env_vars:
 	@[ -f .env ] && source .env
 

@@ -21,8 +21,11 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
     password = serializers.CharField(min_length=4, max_length=100,write_only=True)
     roles = [role.value for role in Roles]
-    role = serializers.ChoiceField(choices=roles)
+    role = serializers.ChoiceField(choices=roles, required=True)
     cohort = serializers.CharField(max_length=100, allow_blank=True, required=False)
+    first_name = serializers.CharField(max_length=100, required=True)
+    last_name = serializers.CharField(max_length=100, required=True)
+    username = serializers.CharField(max_length=100, required=True)
 
     class Meta:
         model = User
@@ -46,3 +49,6 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
                 **validated_data
                 )
         return user
+
+class SignOutSerializer(serializers.Serializer):
+    refresh_token = serializers.CharField(required=True)

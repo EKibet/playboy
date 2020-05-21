@@ -12,7 +12,8 @@ urlpatterns = [
     path('login', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('auth/token/refresh', TokenRefreshView.as_view(), name='token_refresh'),
     path('auth/registration',
-          views.SingleUserRegistrationView.as_view(),name='SingleUserRegistration')
+          views.SingleUserRegistrationView.as_view(),name='SingleUserRegistration'),
+    path('auth/logout/', views.SignoutView.as_view(), name="SignoutView")
 
 
 ]
