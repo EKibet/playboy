@@ -34,12 +34,12 @@ class SendPasswordResetEmail(APIView):
             payload = {'email': recipient,
                        "iat": datetime.now(),
                        "exp": datetime.utcnow()
-                              + timedelta(minutes=20)
+                       + timedelta(minutes=20)
                        }
             token = jwt.encode(payload,
                                env.str('SECRET_KEY'),
                                algorithm='HS256').decode('utf-8')
-            url = '/confirm-password/{}'.format(token)
+            url = '/confirm-password/'
 
             template = 'password_reset.html'
 
