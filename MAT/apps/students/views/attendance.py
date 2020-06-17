@@ -153,7 +153,6 @@ class RetrieveAttendanceRecordsView(APIView, CustomPagination):
             ready_data.update({record.date.strftime("%A"):serializer.data})
             serialized_comments=self.serializer(AttendanceComment.objects.filter(user_id=User.objects.get(id=self.request.query_params.get("user_id",request.user)),record=record),many=True,allow_empty=True)
             ready_data.get(record.date.strftime("%A")).update({"comments":serialized_comments.data})
-            records.append(ready_data)      
+            records.append(ready_data)
         paginated_records = self.paginate_queryset(records,request)
         return self.get_paginated_response(paginated_records)
-
