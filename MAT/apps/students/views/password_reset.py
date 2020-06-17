@@ -95,3 +95,19 @@ class ResetPasswordView(APIView):
                 'message': 'User does not exist'
             }
             return Response(message, status=status.HTTP_404_NOT_FOUND)
+        except jwt.ExpiredSignatureError:
+            message = {
+                'message': 'Token has expired'
+            }
+            return Response(message, status=status.HTTP_401_UNAUTHORIZED)
+        except jwt.InvalidSignatureError:
+            message = {
+                'message': 'Invalid Signature'
+            }
+            return Response(message, status=status.HTTP_401_UNAUTHORIZED)
+        except jwt.DecodeError:
+            message = {
+                'message': 'Unable to decode token'
+            }
+            return Response(message, status=status.HTTP_401_UNAUTHORIZED)
+
