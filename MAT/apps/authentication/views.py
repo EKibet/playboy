@@ -1,20 +1,25 @@
-import os
 import base64
+import os
 
 from django.conf import settings
+from google.auth.transport import requests
+from google.oauth2 import id_token
 from rest_framework import generics, status
+from rest_framework.generics import CreateAPIView
+from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import AllowAny,IsAdminUser
-from rest_framework import status
-from rest_framework.generics import CreateAPIView
-from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from MAT.apps.authentication.models import User
+from MAT.apps.authentication.serializer import SocialAuthSerializer
+from MAT.config.settings.base import env
 
-from .serializers import UserRegistrationSerializer, SignOutSerializer
+from . import models
+from .models import User
+from .serializers import SignOutSerializer, UserRegistrationSerializer
+
 
 class SingleUserRegistrationView(generics.CreateAPIView):
     """
@@ -64,3 +69,41 @@ class SignoutView(generics.CreateAPIView):
         except TokenError as error:
             return Response(error_message, status= status.HTTP_400_BAD_REQUEST)
         return Response(success_message, status= status.HTTP_200_OK)
+
+
+
+class SocialAuthenticationView(APIView):
+    """Social authentication."""
+    permission_classes = (AllowAny,)
+    serializer_class = SocialAuthSerializer
+
+    def post(self, request, *args, **kwargs):
+        google_client_id = env.str('GOOGLE_CLIENT_ID')
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        token = serializer.data['token']
+        request = requests.Request()
+        try:
+            user = id_token.verify_oauth2_token(token, request, google_client_id)
+            if user['iss'] != 'accounts.google.com':raise ValueError('Wrong issuer.')
+            if user['aud'] != google_client_id:raise ValueError('invalid client id')
+            try:
+                user_obj = User.objects.get(email=user['email'])
+                refresh = RefreshToken.for_user(user_obj)
+                access = refresh.access_token
+                message= {
+                "access":str(access),
+                "refresh":str(refresh)
+                }
+                return Response(message, status= status.HTTP_200_OK)
+            except User.DoesNotExist:
+                message= {
+                'message': 'user does not exist. Request admin to register',
+                }
+                return Response(message, status= status.HTTP_401_UNAUTHORIZED)
+    
+        except ValueError:
+            message= {
+            'message': 'token is expired or not issued by google',
+            }
+            return Response(message, status= status.HTTP_401_UNAUTHORIZED)
