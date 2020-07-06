@@ -40,7 +40,6 @@ DEBUG = env.bool('DJANGO_DEBUG', False)
 
 SECRET_KEY = env('SECRET_KEY')
 
-GOOGLE_OAUTH2_SECRET = env('GOOGLE_OAUTH2_SECRET')
 
 # Application definition
 DJANGO_APPS = (
