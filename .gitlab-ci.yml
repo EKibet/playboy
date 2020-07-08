@@ -25,11 +25,11 @@ before_script:
 build:
   stage: build
   script:
-    - docker pull $IMAGE:web || true
-    - docker pull $IMAGE:nginx || true
+    - docker pull $WEB_IMAGE:web || true
+    - docker pull $NGINX_IMAGE:nginx || true
     - docker-compose -f docker-compose.ci.yml build
-    - docker push $IMAGE:web
-    - docker push $IMAGE:nginx
+    - docker push $WEB_IMAGE:web
+    - docker push $NGINX_IMAGE:nginx
 
 deploy:
   stage: deploy
