@@ -23,8 +23,8 @@ build:
     - chmod +x ./setup_env.sh
     - bash ./setup_env.sh
     - docker login -u $CI_REGISTRY_USER -p $CI_JOB_TOKEN $CI_REGISTRY
-    - docker pull $IMAGE:web || true
-    - docker pull $IMAGE:nginx || true
+    - docker pull $WEB_IMAGE || true
+    - docker pull $NGINX_IMAGE || true
     - docker-compose -f docker-compose.ci.yml build
-    - docker push $IMAGE:web
-    - docker push $IMAGE:nginx
+    - docker push $WEB_IMAGE
+    - docker push $NGINX_IMAGE
