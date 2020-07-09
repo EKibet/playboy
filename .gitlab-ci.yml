@@ -45,4 +45,4 @@ deploy:
     - scp  -o StrictHostKeyChecking=no -r ./.env ./docker-compose.prod.yml root@$DIGITAL_OCEAN_IP_ADDRESS:/app
     - bash ./deploy.sh
   only:
-    - development
+    - master
