@@ -27,6 +27,7 @@ build:
   script:
     - docker pull $IMAGE:web || true
     - docker pull $IMAGE:nginx || true
+    - ls -la
     - docker-compose -f docker-compose.ci.yml build
     - docker push $IMAGE:web
     - docker push $IMAGE:nginx
