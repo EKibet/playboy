@@ -1,10 +1,10 @@
 image:
-    name: docker/compose:1.25.4
-    entrypoint: [""]
-  
+  name: docker/compose:1.25.4
+  entrypoint: [""]
+
 services:
   - docker:dind
-  
+
 stages:
   - build
   - deploy
@@ -14,9 +14,9 @@ variables:
   DOCKER_DRIVER: overlay2
 
 before_script:
-  - export image=$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME
-  - export web_image=$image:web
-  - export nginx_image=$image:nginx
+  - export IMAGE=$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME
+  - export WEB_IMAGE=$IMAGE:web
+  - export NGINX_IMAGE=$IMAGE:nginx
   - apk add --no-cache openssh-client bash
   - chmod +x ./setup_env.sh
   - bash ./setup_env.sh
@@ -25,12 +25,11 @@ before_script:
 build:
   stage: build
   script:
-    - docker pull $image:web || true
-    - docker pull $image:nginx || true
-    - ls -la
+    - docker pull $IMAGE:web || true
+    - docker pull $IMAGE:nginx || true
     - docker-compose -f docker-compose.ci.yml build
-    - docker push $image:web
-    - docker push $image:nginx
+    - docker push $IMAGE:web
+    - docker push $IMAGE:nginx
 
 deploy:
   stage: deploy
@@ -43,7 +42,7 @@ deploy:
     - ssh-add ~/.ssh/id_rsa
     - ssh-keyscan -H 'gitlab.com' >> ~/.ssh/known_hosts
     - chmod +x ./deploy.sh
-    - scp  -o StrictHostKeyChecking=no -r ./.env ./docker-compose.prod.yml root@$DIGITAL_OCEAN_IP_ADDRESS:/srv/mat-api
+    - scp  -o StrictHostKeyChecking=no -r ./.env ./docker-compose.prod.yml root@$DIGITAL_OCEAN_IP_ADDRESS:/app
     - bash ./deploy.sh
   only:
     - development

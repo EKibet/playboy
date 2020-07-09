@@ -6,8 +6,8 @@ services:
       context: .
       dockerfile: Dockerfile.prod
       cache_from:
-        - ${web_image}
-    image: ${web_image}
+        - "${WEB_IMAGE}"
+    image: "${WEB_IMAGE}"
     command: gunicorn MAT.config.wsgi:application --bind 0.0.0.0:8000
     volumes:
       - static_volume:/srv/mat-api/static
@@ -18,8 +18,8 @@ services:
     build:
       context: ./nginx
       cache_from:
-        - ${nginx_image}
-    image: ${nginx_image}
+        - "${NGINX_IMAGE}"
+    image: "${NGINX_IMAGE}"
     volumes:
       - static_volume:/srv/mat-api/static
     ports:

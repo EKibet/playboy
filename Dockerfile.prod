@@ -1,5 +1,5 @@
 # pull official base image
-FROM python:3.7.8-alpine
+FROM python:3.7-alpine
 
 # set work directory
 WORKDIR /srv/mat-api
