@@ -10,11 +10,11 @@ from rest_framework.parsers import FileUploadParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from MAT.apps.authentication.models import Student, User
+from MAT.apps.authentication.models import Student, User, Tm
 from MAT.apps.common.utility import send_link
 
-from .renderers import StaffJSONRenderer
-from .serializer import StaffListSerializer
+from .renderers import StaffJSONRenderer, TmJSONRenderer
+from .serializer import StaffListSerializer, TMSerializer
 from .tasks import celery_send_link
 
 
@@ -55,7 +55,7 @@ class SendEmails(APIView):
         message = {
             "success": "{} emails were successfully sent.".format(len(valid_emails)),
             "fail": "{} emails failed.".format(len(invalid_emails)),
-            "invalid_emails":invalid_emails
+            "invalid_emails": invalid_emails
         }
         return Response(message, status=status.HTTP_200_OK)
 
@@ -67,6 +67,7 @@ class StaffListing(generics.ListAPIView):
     queryset = User.objects.filter(is_staff=True)
     serializer_class = StaffListSerializer
     renderer_classes = (StaffJSONRenderer,)
+
 
 class SingleStaffListing(APIView):
     """
@@ -80,12 +81,14 @@ class SingleStaffListing(APIView):
 
     def get(self, request, *args, **kwargs):
         staff = get_object_or_404(User, is_staff=True, pk=kwargs['id'])
+
         serializer = StaffListSerializer(staff)
         return Response(serializer.data)
 
     def patch(self, request, *args, **kwargs):
         staff = get_object_or_404(User, is_staff=True, pk=kwargs['id'])
-        serializer = StaffListSerializer(staff, data=request.data, partial=True)
+        serializer = StaffListSerializer(
+            staff, data=request.data,  partial=True)
         if serializer.is_valid():
             staff = serializer.save()
             return Response(StaffListSerializer(staff).data)
@@ -95,3 +98,36 @@ class SingleStaffListing(APIView):
         staff = get_object_or_404(User, is_staff=True, pk=kwargs['id'])
         staff.delete()
         return Response("staff deleted", status=status.HTTP_204_NO_CONTENT)
+
+
+class TmDetails(APIView):
+    """
+    API view that allows read,delete , update(patch) operations on a 
+    single Tm instance.
+    Args:
+        id: The staff user's id
+
+    """
+    renderer_classes = (TmJSONRenderer,)
+
+    def get(self, request, *args, **kwargs):
+        staff = get_object_or_404(Tm, pk=kwargs['id'])
+
+        serializer = TMSerializer(staff)
+        return Response(serializer.data)
+
+    def patch(self, request, *args, **kwargs):
+        staff = get_object_or_404(Tm, pk=kwargs['id'])
+        serializer = TMSerializer(
+            staff, data=request.data,  partial=True)
+        if serializer.is_valid():
+            staff = serializer.save()
+            return Response(TMSerializer(staff).data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, *args, **kwargs):
+        staff = get_object_or_404(Tm, pk=kwargs['id'])
+        staff.delete()
+        return Response("TM deleted", status=status.HTTP_204_NO_CONTENT)
+
+

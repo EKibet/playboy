@@ -30,13 +30,48 @@ class User(AbstractUser, CommonFieldsMixin):
         _("Type"), max_length=50, choices=Types.choices, default=base_type
     )
     email = models.CharField(_("email of User"), unique=True, max_length=255)
-    cohort = models.ManyToManyField(Cohort, related_name='members', blank=True)
+    cohort = models.ManyToManyField(
+        Cohort, through='CohortMembership', related_name='members', blank=True)
 
     def save(self, *args, **kwargs):
         if not self.pk:
             self.type = self.base_type
     
         return super().save(*args, **kwargs)
+    
+    @property
+    def cohort_history(self):
+        cohort_history = []
+
+        self_history = self.cohort.all()
+
+        for cohort_instance in self_history:
+            cohort = {}
+            try:
+                cohort["cohort_id"] = cohort_instance.id
+                cohort["cohort_name"] = cohort_instance.name
+            except Exception as e:
+                continue
+            cohort_history.append(cohort)
+        return cohort_history
+
+    @property
+    def current_cohorts(self):
+        current_cohorts_list = []
+
+        membership_history = CohortMembership.objects.filter(
+            user=self, current_cohort=True)
+
+        for membership in membership_history:
+            cohort = {}
+            cohort_instance = membership.cohort
+            try:
+                cohort["cohort_id"] = cohort_instance.id
+                cohort["cohort_name"] = cohort_instance.name
+            except Exception as e:
+                continue
+            current_cohorts_list.append(cohort)
+        return current_cohorts_list
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
@@ -100,4 +135,12 @@ class PodLeader(User):
     class Meta:
         proxy = True
 
-
+class CohortMembership(models.Model):
+    """A model used for representing membership of  tms in cohorts
+    Add current_cohort field to track the current cohort for the user
+    Args:
+        models ([Model]): [Inherit from django Model]
+    """
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    cohort = models.ForeignKey(Cohort, on_delete=models.CASCADE)
+    current_cohort = models.BooleanField(null=True)
