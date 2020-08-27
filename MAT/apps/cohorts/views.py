@@ -1,10 +1,12 @@
-from rest_framework import generics, viewsets, mixins
+from rest_framework import generics, viewsets, mixins,status
 from rest_framework.response import Response
 
 from MAT.apps.cohorts.models import Cohort
 
 from .renderers import CohortJSONRenderer, CohortsJSONRenderer
-from .serializers import CohortSerializer
+from .serializers import CohortSerializer,TMCohortSerializer
+from rest_framework.views import APIView
+from MAT.apps.authentication.models import User
 
 
 class CohortListing(generics.ListAPIView):
@@ -32,3 +34,13 @@ class CohortViewSet(mixins.CreateModelMixin,
     queryset = Cohort.objects.all()
     serializer_class = CohortSerializer
     renderer_classes = (CohortJSONRenderer,)
+
+class TMCohortsList(APIView):
+    serializer_class = TMCohortSerializer
+
+    def get(self,request):
+        cohorts = request.user.cohort.all()
+        serializer = self.serializer_class(
+            cohorts, many=True, allow_empty=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)

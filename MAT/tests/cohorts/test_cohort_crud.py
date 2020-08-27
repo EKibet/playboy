@@ -4,6 +4,7 @@ import pytest
 from django.urls import reverse
 from rest_framework import status
 
+from MAT.apps.authentication.models import User
 from MAT.apps.cohorts.models import Cohort
 
 
@@ -25,6 +26,7 @@ class TestCohortCRUD():
     def test_cohort_name_succeeds(self, new_cohort):
         new_cohort.save()
         saved_cohort = Cohort.objects.latest('id')
+        
         assert str(saved_cohort) == "MC01"
 
     @pytest.mark.django_db
@@ -82,3 +84,17 @@ class TestCohortCRUD():
         client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
         response = client.delete(url, content_type='application/json')
         assert response.status_code == status.HTTP_204_NO_CONTENT
+
+    @pytest.mark.django_db
+    def test_get_tm_cohorts_list_succeeds(self, client, get_or_create_token):
+        url = reverse('cohorts:tm-list')
+        token = get_or_create_token
+        cohort1 = Cohort.objects.create(name="MC32")
+        cohort2 = Cohort.objects.create(name="MC33")
+        current_usr = User.objects.get(email='test@mail.com')
+        current_usr.cohort.add(cohort1,cohort2)
+        
+        client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
+        response = client.get(url)
+        assert response.status_code == status.HTTP_200_OK
+        assert len(response.data) == 3
