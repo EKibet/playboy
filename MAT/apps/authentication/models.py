@@ -7,10 +7,9 @@ from django.contrib.auth.models import (
 from django.db import models
 from simple_history.models import HistoricalRecords
 
-from MAT.apps.common.base import CommonFieldsMixin
-from MAT.apps.cohorts.models import Cohort
-from django.db.models.signals import post_save
 from MAT.apps.authentication.utility import student_cohort_assignment
+from MAT.apps.cohorts.models import Cohort
+from MAT.apps.common.base import CommonFieldsMixin
 
 
 class UserManager(BaseUserManager):
@@ -21,8 +20,10 @@ class UserManager(BaseUserManager):
     All we have to do is override the `create_user` function which we will use
     to create `User` objects.
     """
-    
+
+
     def create_student(self, username, email, password=None, **kwargs):
+        from MAT.apps.profiles.models import UserProfile
         """Create and return a `User` with an email, username and password."""
         first_name = kwargs.get('first_name')
         last_name = kwargs.get('last_name')
@@ -38,15 +39,22 @@ class UserManager(BaseUserManager):
         if email is None:
             raise TypeError('Students must have an email address.')
 
-        user = self.model(
-            username=username, email=self.normalize_email(email), first_name=first_name, last_name=last_name, cohort=student_cohort_assignment(cohort_name))
+        user = self.model(username=username, email=self.normalize_email(email), first_name=first_name, last_name=last_name)
         user.set_password(password)
         user.is_student = True
         user.save()
+        cohort = student_cohort_assignment(cohort_name)
+        user.cohort.add(cohort)
+        UserProfile.objects.filter(
+            user=user).update(student_class=cohort.name)
         return user
 
     def create_staff(self, username, email, password=None, **kwargs):
         """Create and return a `User` with staff privileges eg a TM."""
+
+        from MAT.apps.profiles.models import UserProfile
+        cohort_name = kwargs.get('cohort')
+
 
         if username is None:
             raise TypeError('Users must have a username.')
@@ -59,22 +67,31 @@ class UserManager(BaseUserManager):
         user.set_password(password)
         user.is_staff = True
         user.save()
-
+        cohort = student_cohort_assignment(cohort_name)
+        user.cohort.add(cohort)
+        UserProfile.objects.filter(
+            user=user).update(student_class=cohort.name)
         return user
 
-    def create_superuser(self, username, email, password):
+    def create_superuser(self, username, email, password,**kwargs):
+        
         """
         Create and return a `User` with superuser powers.
         Superuser powers means that this use is an admin that can do anything
         they want.
         """
+        cohort_name = kwargs.get('cohort')
+
         if password is None:
             raise TypeError('Superusers must have a password.')
-        user = self.create_staff(username, email, password)
+        user = self.create_staff(username, email, password,cohort=cohort_name)
         user.is_superuser = True
         user.is_staff = True
         user.save()
+        cohort = student_cohort_assignment(cohort_name)
+        user.cohort.add(cohort)
         return user
+
 
     def get_queryset(self):
         return super(UserManager, self).get_queryset().filter(deleted=False)
@@ -108,8 +125,7 @@ class User(AbstractBaseUser, CommonFieldsMixin, PermissionsMixin):
 
     # this is to track the changes on the model.
     history = HistoricalRecords()
-    cohort = models.ForeignKey(
-        Cohort, on_delete=models.CASCADE, related_name='members', null=True)
+    cohort = models.ManyToManyField(Cohort, related_name='members',blank=True)
 
     # The `USERNAME_FIELD` property tells us which field we will use to log in.
     # In this case, we want that to be the email field.
@@ -151,5 +167,3 @@ class User(AbstractBaseUser, CommonFieldsMixin, PermissionsMixin):
 
     class Meta:
         ordering = ['-updated_at', '-created_at']
-
-

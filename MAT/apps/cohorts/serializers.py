@@ -10,3 +10,12 @@ class CohortSerializer(serializers.ModelSerializer):
         fields = ('cohort_name', 'id', 'created_at', 'updated_at')
 
         read_only_fields = ('created_at', 'updated_at', 'id',)
+
+
+class TMCohortSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Cohort
+        fields = ('cohort_name', 'id', 'created_at', 'updated_at')
+
+        read_only_fields = ('created_at', 'updated_at', 'id',)

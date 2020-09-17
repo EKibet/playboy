@@ -41,7 +41,9 @@ class TestRegistration:
                                 "username":"chris",
                                 "email":"admin@gmail.com",
                                 "password":"12345",
-                                "role":"staff"
+                                "role":"staff",
+                                "cohort":"MC32"
+
     }
 
 
@@ -56,15 +58,17 @@ class TestRegistration:
         url = reverse('authentication:SingleUserRegistration')
 
         user = {
-                "first_name": "chris",
-                "last_name": "karimi",
-                "username":"chris",
-                "email":"admin@gmail.com",
-                "password":"12345",
-                "role":"student",
-                "cohort":"mc23"
-                }
+                                "first_name": "chris",
+                                "last_name": "karimi",
+                                "username":"chris",
+                                "email":"admin@gmail.com",
+                                "password":"12345",
+                                "role":"student",
+                                "cohort": "MC01"
 
+    }
+
+        
         response = client.post(url,data=json.dumps(user),content_type='application/json')
 
         assert response.status_code == status.HTTP_201_CREATED

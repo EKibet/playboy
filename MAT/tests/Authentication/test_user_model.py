@@ -7,13 +7,13 @@ class TestUserModel:
 	@pytest.mark.django_db
 	def test_create_new_user_succeeds(self):
 		User.objects.create_staff(
-            username="Batman", email='test@mail.com')
+            username="Batman", email='test@mail.com',cohort="MC32")
 		assert User.objects.filter(username='Batman').exists()
 
 	@pytest.mark.django_db
 	def test_create_super_user_succeeds(self):
 		User.objects.create_superuser(
-				username="Batman", email='test@mail.com', password='secret')
+				username="Batman", email='test@mail.com', password='secret',cohort="Default")
 		assert User.objects.filter(username='Batman').exists()
 
 	@pytest.mark.django_db
@@ -36,7 +36,7 @@ class TestUserModel:
 	def test_create_user_without_email_fails(self):
 		with pytest.raises(TypeError) as excinfo:
 			User.objects.create_staff(
-					username="Batman", email=None)
+					username="Batman", email=None,cohort="MC32")
 		assert "Users must have an email address." in str(excinfo.value)
 
 	@pytest.mark.django_db
@@ -77,3 +77,5 @@ class TestUserModel:
 		user.delete()
 		assert user.deleted == True
 		assert User.objects.filter(username='Batman', is_student=True).exists() == False
+
+
