@@ -14,7 +14,7 @@ collectstatic:
 	python manage.py collectstatic
 
 shell:
-	python3 manage.py shell
+	python3 manage.py shell_plus
 
 set_env_vars:
 	@[ -f .env ] && source .env

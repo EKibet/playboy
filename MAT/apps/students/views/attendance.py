@@ -38,7 +38,7 @@ class AttendanceRecordsAPIView(APIView):
         }
         try:
             if strf_now <= punctual_time_string:
-                attendance_record=get_list_or_404(AttendanceRecords,is_checked_in=False,user_id=request.user,user_id__is_student=True, date=datetime.today())[0]
+                attendance_record=get_list_or_404(AttendanceRecords,is_checked_in=False,user_id=request.user,user_id__type="STUDENT", date=datetime.today())[0]
                 attendance_record.is_present=True
                 attendance_record.checked_in=timezone.now()
                 attendance_record.is_checked_in=True
@@ -51,7 +51,7 @@ class AttendanceRecordsAPIView(APIView):
 
             elif(strf_now > punctual_time_string):
 
-                attendance_record=get_list_or_404(AttendanceRecords,user_id=request.user,is_checked_in=False,user_id__is_student=True, date=datetime.today())[0]
+                attendance_record=get_list_or_404(AttendanceRecords,user_id=request.user,is_checked_in=False,user_id__type="STUDENT", date=datetime.today())[0]
                 attendance_record.is_present=True
                 attendance_record.checked_in=timezone.now()
                 attendance_record.is_late=True
@@ -68,7 +68,7 @@ class AttendanceRecordsAPIView(APIView):
             message={"error":[]}
             if AttendanceRecords.objects.filter(is_checked_in=True, date=datetime.today()):
                 message.get("error").append("Cannot checkin more than once!")
-            if AttendanceRecords.objects.filter(user_id__is_student=False, date=datetime.today()):
+            if AttendanceRecords.objects.filter(user_id__is_verified=False, date=datetime.today()):
                 message.get("error").append("Student account not verified!")
             if len(AttendanceRecords.objects.filter(user_id=request.user, date=datetime.today())) == 0:
                 message.get("error").append("Cannot find attendace record matching your profile!")
@@ -93,7 +93,7 @@ class AttendanceCheckoutApiView(APIView):
         }
         try:
             if strf_now <= check_out:
-                attendance_record=get_list_or_404(AttendanceRecords,is_checked_out=False,user_id=request.user,checked_in__isnull=False, user_id__is_student=True,date=datetime.today())[0]
+                attendance_record=get_list_or_404(AttendanceRecords,is_checked_out=False,user_id=request.user,checked_in__isnull=False, user_id__type="STUDENT",date=datetime.today())[0]
                 attendance_record.checked_out=timezone.now()
                 attendance_record.is_checked_out=True
                 attendance_record.save()
@@ -101,7 +101,7 @@ class AttendanceCheckoutApiView(APIView):
                 response['data']=json.loads(res)
                 response['status'] = 'Checked out earlier'
             elif(strf_now > check_out):
-                attendance_record=get_list_or_404(AttendanceRecords,is_checked_out=False,user_id=request.user,checked_in__isnull=False, user_id__is_student=True,date=datetime.today())[0]
+                attendance_record=get_list_or_404(AttendanceRecords,is_checked_out=False,user_id=request.user,checked_in__isnull=False, user_id__type="STUDENT",date=datetime.today())[0]
                 attendance_record.checked_out=timezone.now()
                 attendance_record.is_checked_out=True
                 attendance_record.save()
@@ -112,9 +112,9 @@ class AttendanceCheckoutApiView(APIView):
 
         except Http404:
             message={"error":[]}
-            if AttendanceRecords.objects.filter(is_checked_in=False,date=datetime.today(),user_id__is_student=True):
+            if AttendanceRecords.objects.filter(is_checked_in=False,date=datetime.today(),user_id__type="STUDENT"):
                 message.get("error").append("Cannot checkout if you did not checkin")
-            if AttendanceRecords.objects.filter(user_id__is_student=False):
+            if AttendanceRecords.objects.filter(user_id__is_verified=False):
                 message.get("error").append("Student account not verified!")
             if AttendanceRecords.objects.filter(is_checked_out=True, date=datetime.today()):
                 message.get("error").append("Cannot checkout more than once!")

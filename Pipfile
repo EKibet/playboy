@@ -9,7 +9,7 @@ autopep8 = "*"
 isort = "*"
 
 [packages]
-djangorestframework = "*"
+djangorestframework = "==3.11.0"
 django-environ = "*"
 psycopg2-binary = "*"
 pytest-django = "*"
@@ -26,6 +26,7 @@ redis = "*"
 cloudinary = "*"
 django = "*"
 google-auth = "*"
+django-extensions = "*"
 
 [requires]
 python_version = "3.7"

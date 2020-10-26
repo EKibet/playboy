@@ -47,23 +47,6 @@ class TestStaffDetails():
         assert response.status_code==status.HTTP_200_OK
         assert response.data.get('first_name') == 'Dababy'      
 
-    @pytest.mark.django_db
-    def test_update_staff_details_fails_without_firstname(self, client, new_admin_user, get_or_create_token):
-        """
-            Test update single staff without username 
-        """
-        token = get_or_create_token
-        client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
-        data={
-            'first_name':'',
-            'email':'chris@gmail.com'
-        }
-        new_admin_user.save()
-        url=reverse('staff:staff_details',kwargs={'id':new_admin_user.id})
-        response = client.patch(url,data=json.dumps(data),
-                              content_type='application/json')
-        assert response.status_code==status.HTTP_400_BAD_REQUEST
-
 
     @pytest.mark.django_db
     def test_delete_staff_succeeds(self, client, get_or_create_token, new_admin_user):

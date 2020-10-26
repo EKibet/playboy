@@ -99,7 +99,7 @@ class TestStudentsList:
             'detail') == "Error decoding token, please generate a new one."
 
     @pytest.mark.django_db
-    def test_expired_token(self, client, new_student, get_or_create_token, create_expired_token):
+    def test_expired_token(self, client, get_or_create_token, create_expired_token):
         token = get_or_create_token
         token_2 = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNTg1OTg0ODIyLCJqdGkiOiI4OWQwZjQ2NWFkNjU0NTYzOWJkZjRhZTNhODI1YTBkMSIsInVzZXJfaWQiOjF9.ik0Yat7Pi1_wCBhEx1weodGX6prglv3MQ1LRlyuMIOk'
         client.credentials(HTTP_AUTHORIZATION='Bearer '+token)

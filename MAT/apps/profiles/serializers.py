@@ -2,7 +2,7 @@ from rest_framework import serializers, status
 from rest_framework.response import Response
 
 from MAT.apps.authentication.serializers import UserSerializer
-from .models import UserProfile
+from .models import StudentProfile
 
 
 class ProfileSerializer(serializers.ModelSerializer):
@@ -12,6 +12,6 @@ class ProfileSerializer(serializers.ModelSerializer):
         required=False, allow_empty_file=True)
 
     class Meta:
-        model = UserProfile
+        model = StudentProfile
         fields = '__all__'
         read_only_fields = ('created_at', 'updated_at', 'username')

@@ -7,7 +7,7 @@ from django.urls import reverse
 from django.utils import timezone
 from rest_framework import status
 
-from MAT.apps.authentication.models import User
+from MAT.apps.authentication.models import Student, User
 from MAT.apps.students.models import AttendanceRecords
 
 
@@ -18,7 +18,7 @@ class TestAttendanceEndpoints:
 
         token = get_or_create_token
         AttendanceRecords.objects.create(
-            user_id=User.objects.get(email="test@mail.com"))
+            user_id=Student.objects.get(email="test@mail.com"))
 
         client.credentials(HTTP_AUTHORIZATION='Bearer '+token)
         url = reverse('students:attendance_checkin')
@@ -113,7 +113,7 @@ class TestAttendanceEndpoints:
         """Test for student check in"""
 
         token = get_or_create_token
-        current_user = User.objects.get(email="test@mail.com")
+        current_user = Student.objects.get(email="test@mail.com")
         AttendanceRecords.objects.create(user_id=current_user)
         AttendanceRecords.objects.filter(user_id=current_user).update(
             is_checked_in=True, is_checked_out=True)

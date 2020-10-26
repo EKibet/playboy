@@ -57,6 +57,7 @@ THIRD_PARTY_APPS = (
     'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
     'simple_history',
+    'django_extensions'
     
 )
 

@@ -30,7 +30,7 @@ class TestRegistration:
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
     @pytest.mark.django_db
-    def test_successful_registration_with_valid_token_and_staff_role(self,get_or_create_admin_token, client):
+    def test_successful_registration_with_valid_token_and_tm_role(self,get_or_create_admin_token, client):
         token = get_or_create_admin_token
         client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
         url = reverse('authentication:SingleUserRegistration')
@@ -41,7 +41,7 @@ class TestRegistration:
                                 "username":"chris",
                                 "email":"admin@gmail.com",
                                 "password":"12345",
-                                "role":"staff",
+                                "role":"TM",
                                 "cohort":"MC32"
 
     }
@@ -63,7 +63,7 @@ class TestRegistration:
                                 "username":"chris",
                                 "email":"admin@gmail.com",
                                 "password":"12345",
-                                "role":"student",
+                                "role":"STUDENT",
                                 "cohort": "MC01"
 
     }

@@ -6,7 +6,7 @@ from rest_framework.parsers import FileUploadParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from MAT.apps.authentication.models import User
+from MAT.apps.authentication.models import Student
 from MAT.apps.common.pagination import CustomPagination
 from MAT.config.settings.base import env
 
@@ -41,7 +41,7 @@ class StudentInfoUploadView(APIView):  # pragma: no cover
         try:
             for row in reader:
                 try:
-                    User.objects.create_student(username=row['Username'], email=row['email'],
+                    Student.objects.create(username=row['Username'], email=row['email'],
                                                 password=env.str('STUDENTS_PASSWORD','moringaschool'), first_name=row['first_name'], last_name=row['second_name'],cohort=row['Class'])
                     stats['created_count'] += 1
                     created_emails.append(row['email'])
@@ -60,7 +60,7 @@ class StudentDetailView(APIView):
 
     def get(self, request, email):
         try:
-            user = User.objects.get(email=email, is_student=True)
+            user = Student.objects.get(email=email)
         except:
             message = {"error": "User does not exist."}
             return Response(message, status=status.HTTP_404_NOT_FOUND)
@@ -71,7 +71,7 @@ class StudentDetailView(APIView):
 
     def put(self, request, email):
         try:
-            user = User.objects.get(email=email, is_student=True)
+            user = Student.objects.get(email=email)
         except:
             message = {"error": "User does not exist."}
             return Response(message, status=status.HTTP_404_NOT_FOUND)
@@ -90,7 +90,7 @@ class StudentListAPIView(generics.ListAPIView):
     """
     An api view for returning the students list using the serializer
     """
-    queryset = User.objects.filter(is_student=True)
+    queryset = Student.objects.filter(is_active=True)
     serializer_class = StudentSerializer
     renderer_classes = (StudentsJSONRenderer,)
 

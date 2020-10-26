@@ -13,12 +13,11 @@ from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from MAT.apps.authentication.models import User
-from MAT.apps.authentication.serializer import SocialAuthSerializer
 from MAT.config.settings.base import env
 
 from . import models
 from .models import User
-from .serializers import SignOutSerializer, UserRegistrationSerializer
+from .serializers import SignOutSerializer, UserRegistrationSerializer, SocialAuthSerializer
 
 
 class SingleUserRegistrationView(generics.CreateAPIView):
@@ -30,7 +29,7 @@ class SingleUserRegistrationView(generics.CreateAPIView):
         username: username that will be indexed by the system
         email: the student's email
         password: The new account password
-        role: The user's role either staff or student
+        role: The user's role either TM,STUDENT, POD_LEADER
     """
     permission_classes =[IsAdminUser]
     serializer_class = UserRegistrationSerializer

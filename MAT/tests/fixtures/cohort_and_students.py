@@ -3,7 +3,7 @@ from io import BytesIO
 import pytest
 from rest_framework.test import APIClient
 
-from MAT.apps.authentication.models import User
+from MAT.apps.authentication.models import User, Student
 from MAT.apps.students.models import AttendanceRecords
 from MAT.config.settings.base import BASE_DIR
 import os
@@ -23,5 +23,5 @@ def file_data():
 @pytest.fixture(scope="function")
 def create_attendance_record(new_user):
     new_user.save()
-    current_user=User.objects.get(email="testy@mail.com")
+    current_user=Student.objects.get(email="test@mail.com")
     return AttendanceRecords.objects.create(user_id=current_user)
