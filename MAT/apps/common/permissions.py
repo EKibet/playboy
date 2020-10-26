@@ -1,16 +1,23 @@
 from rest_framework.permissions import BasePermission, SAFE_METHODS
-
-
 class IsOwnerOrReadOnly(BasePermission):
 
      """
     Custom permission to only allow owners of an object to edit it.
     """
      def has_object_permission(self, request, view, obj):
-        # Read permissions are allowed to any request,
-        # so we'll always allow GET, HEAD or OPTIONS requests.
+        
         if request.method in permissions.SAFE_METHODS:
             return True
 
-        # Write permissions are only allowed to the owner of the snippet.
         return obj.owner == request.user
+class IsPodLeaderOrAdmin(BasePermission):
+    '''
+    Check if the user is a pod leader or admin before creating a cohort. 
+    '''
+    def has_permission(self, request, view):
+        pod_leader = request.user.type =='POD_LEADER'
+        admin = request.user.type =='ADMIN'
+        return bool(
+             super().has_permission(request, view)
+             and (pod_leader or admin)
+            )
