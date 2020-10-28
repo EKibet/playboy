@@ -8,10 +8,10 @@ from MAT.apps.authentication.models import User
 
 class TestLogin:
     @pytest.mark.django_db
-    def test_can_login_with_correct_credentials(self,new_user, client):
+    def test_can_login_with_correct_credentials(self, new_user, client):
         new_user.save()
         response = client.post(reverse('authentication:token_obtain_pair'), {
-                            "email": "testy@mail.com", "password": "secret"}, format='json')
+                            "email": "testyy@mail.com", "password": "secret"}, format='json')
         assert response.status_code == status.HTTP_200_OK
 
 

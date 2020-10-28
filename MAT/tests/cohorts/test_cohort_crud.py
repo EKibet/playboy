@@ -97,4 +97,4 @@ class TestCohortCRUD():
         client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
         response = client.get(url)
         assert response.status_code == status.HTTP_200_OK
-        assert len(response.data) == 3
+        assert len(response.data) == 2

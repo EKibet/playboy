@@ -18,7 +18,7 @@ class TestLogout:
         new_user.save()
         client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
         sign_in_response = client.post(reverse('authentication:token_obtain_pair'), {
-                            "email": "testy@mail.com", "password": "secret"}, format='json')
+                            "email": "testyy@mail.com", "password": "secret"}, format='json')
         assert sign_in_response.status_code == status.HTTP_200_OK
         refresh_token_response = client.post(reverse('authentication:token_refresh'), {
                     "refresh": sign_in_response.data.get('refresh')}, format='json')

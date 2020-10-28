@@ -1,6 +1,10 @@
 import enum
 from rest_framework import serializers
-from .models import User
+from rest_framework.validators import UniqueValidator
+
+from MAT.apps.authentication.utility import student_cohort_assignment
+
+from .models import PodLeader, Student, Tm, User
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -16,8 +20,9 @@ class UserSerializer(serializers.ModelSerializer):
 class UserRegistrationSerializer(serializers.ModelSerializer):
 
     class Roles(enum.Enum):
-        student = 'student'
-        staff = 'staff'
+        TM = "TM", "Tm"
+        STUDENT = "STUDENT", "Student"
+        POD_LEADER = "POD_LEADER", "PodLeader"
 
     password = serializers.CharField(min_length=4, max_length=100,write_only=True)
     roles = [role.value for role in Roles]
@@ -25,7 +30,8 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     cohort = serializers.CharField(max_length=100, allow_blank=True, required=False)
     first_name = serializers.CharField(max_length=100, required=True)
     last_name = serializers.CharField(max_length=100, required=True)
-    username = serializers.CharField(max_length=100, required=True)
+    username = serializers.CharField(max_length=100, required=True, validators=[UniqueValidator(queryset=User.objects.all())])
+    email = serializers.CharField(max_length=100, required=True, validators=[UniqueValidator(queryset=User.objects.all())])
 
     class Meta:
         model = User
@@ -39,16 +45,46 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         role = self.validated_data['role']
-        if role == 'student':
-            user = User.objects.create_student(
-                **validated_data
+        if role == 'STUDENT':
+            user = Student.objects.create(
+                username=validated_data['username'],
+                email=validated_data['email'],
+                first_name=validated_data['first_name'],
+                last_name=validated_data['last_name'],
+                password=validated_data['password'],
+                type=role
                 )
+            cohort_name = validated_data.get('cohort')
+            cohort = student_cohort_assignment(cohort_name)
+            user.cohort.add(cohort)
+
+        elif role == 'TM':
+            user = Tm.objects.create(
+                username=validated_data['username'],
+                email=validated_data['email'],
+                first_name=validated_data['first_name'],
+                last_name=validated_data['last_name'],
+                password=validated_data['password'],
+                type=role
+                )
+            cohort_name = validated_data.get('cohort')
+            cohort = student_cohort_assignment(cohort_name)
+            user.cohort.add(cohort)
 
         else:
-            user = User.objects.create_staff(
-                **validated_data
+            user = PodLeader.objects.create(
+                username=validated_data['username'],
+                email=validated_data['email'],
+                first_name=validated_data['first_name'],
+                last_name=validated_data['last_name'],
+                password=validated_data['password'],
+                type=role
                 )
         return user
 
 class SignOutSerializer(serializers.Serializer):
     refresh_token = serializers.CharField(required=True)
+
+class SocialAuthSerializer(serializers.Serializer):
+
+    token = serializers.CharField(required=True, allow_blank=False)

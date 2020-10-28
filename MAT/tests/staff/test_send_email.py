@@ -19,10 +19,10 @@ class TestSendEmails():
         token = get_or_create_token
         url = reverse('staff:send-mail')
         data = {
-            "recipients": ["testy@mail.com"],
+            "recipients": ["testyy@mail.com"],
             "subject": "Testing2",
             "message": "Trying this out",
-            "sender": "testy@mail.com"
+            "sender": "test@mail.com"
         }
 
         self.celery_send_link_called = False
@@ -43,20 +43,20 @@ class TestSendEmails():
         assert response.status_code == status.HTTP_200_OK
         assert self.celery_send_link_called
         assert self.subject == 'Testing2'
-        assert self.email == 'testy@mail.com'
+        assert self.email == 'testyy@mail.com'
 
     @pytest.mark.django_db
-    def test_send_multiple_emails_successfully(self, client, new_user, new_user2, get_or_create_token, monkeypatch):
+    def test_send_multiple_emails_successfully(self, client, new_user, new_student, get_or_create_token, monkeypatch):
         """Test for sending a single email successfully"""
         new_user.save()
-        new_user2.save()
+        new_student.save()
         token = get_or_create_token
         url = reverse('staff:send-mail')
         data = {
-            "recipients": ["sly@gmail.com", "ken@gmail.com"],
+            "recipients": ["testyy@mail.com"],
             "subject": "Testing2",
             "message": "Trying this out",
-            "sender": "sly@gmail.com"
+            "sender": "test@gmail.com"
         }
 
         self.celery_send_link_called = False
@@ -76,9 +76,10 @@ class TestSendEmails():
         response = client.post(url, data=json.dumps(
             data), content_type='application/json')
         assert response.status_code == status.HTTP_200_OK
+        assert "emails were successfully sent." in response.data["success"]
         assert self.celery_send_link_called
         assert self.subject == 'Testing2'
-        assert self.email == 'ken@gmail.com'
+        assert self.email == 'testyy@mail.com'
 
     @pytest.mark.django_db
     def test_send_unsuccessful_email(self, client, new_user, get_or_create_token):

@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 
 from MAT.apps.common.utility import make_cloudinary_url
 
-from .models import UserProfile
+from .models import StudentProfile
 from .renderers import ProfileJSONRenderer, ProfilesJSONRenderer
 from .serializers import ProfileSerializer
 from MAT.apps.students.utility_functions import calculate_student_attendance
@@ -18,7 +18,7 @@ class ProfileListView(ListAPIView):
     renderer_classes = (ProfilesJSONRenderer,)
 
     def get_queryset(self):
-        queryset = UserProfile.objects.all()
+        queryset = StudentProfile.objects.all()
         return queryset
 
 
@@ -27,7 +27,7 @@ class ProfileDetail(APIView):
 
     def get(self, request, id):
         try:
-            profile = UserProfile.objects.get(user__id=id)
+            profile = StudentProfile.objects.get(user__id=id)
         except:
             message = {"error": "Profile does not exist."}
             return Response(message, status=status.HTTP_404_NOT_FOUND)
@@ -38,7 +38,7 @@ class ProfileDetail(APIView):
         return Response(response, status=status.HTTP_200_OK)
 
     def put(self, request, id):
-        instance_profile = UserProfile.objects.get(user__id=id)
+        instance_profile = StudentProfile.objects.get(user__id=id)
         if instance_profile.user.id != request.user.id:
             data = {'error': 'You are not allowed to edit another persons profile'}
             return Response(data, status.HTTP_403_FORBIDDEN)

@@ -39,10 +39,9 @@ class TestUserProfile():
         url = reverse('profiles:profile_details', kwargs={'id': user_id})
         client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
         AttendanceRecords.objects.create(
-            user_id=User.objects.get(email="testy@mail.com"))
+            user_id=User.objects.get(email="testyy@mail.com"))
         response = client.get(url)
-        assert response.data['data'].get('username') == 'Batman'
-        assert response.data['data'].get('student_class') == 'MC23'
+        assert response.data['data'].get('username') == 'Batman1'
         assert response.data['data'].get('gender') == 'Male'
         assert response.data['attendance'].get('attendance_percentage') == 0.0
         assert response.status_code == status.HTTP_200_OK
@@ -60,16 +59,16 @@ class TestUserProfile():
         assert response.data.get('gender') == 'female'
 
     @pytest.mark.django_db
-    def test_edit_other_persons_profile(self, client, profile_token, new_user2):
+    def test_edit_other_persons_profile(self, client, profile_token, new_user_with_profile2):
         """Test to edit the profile of another user"""
-        new_user2.save()
+        new_user_with_profile2.save()
         update_data = {"gender": "female"}
         token, user_id = profile_token
-        url = reverse('profiles:profile_details', kwargs={'id': new_user2.id})
+        url = reverse('profiles:profile_details', kwargs={'id': new_user_with_profile2.user.id})
         client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
         response = client.put(url, data=json.dumps(update_data),
                               content_type='application/json')
-        response.data.get(
+        assert response.data.get(
             'error') == 'You are not allowed to edit another persons profile'
         assert response.status_code == status.HTTP_403_FORBIDDEN
 

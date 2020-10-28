@@ -7,7 +7,7 @@ class CustomManager(models.Manager):
     """
 
     def get_queryset(self):
-        return super(CustomManager, self).get_queryset().filter(deleted=False)
+        return super(CustomManager, self).get_queryset().filter(deleted=False, is_active=True)
 
 
 class CommonFieldsMixin(models.Model):
@@ -27,6 +27,7 @@ class CommonFieldsMixin(models.Model):
 
     def delete(self, *args, **kwargs):
         self.deleted = True
+        self.is_active = False
         self.save()
 
     class Meta:

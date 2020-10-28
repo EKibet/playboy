@@ -8,7 +8,7 @@ from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from MAT.apps.authentication.models import User
+from MAT.apps.authentication.models import Student, User
 from MAT.apps.common.utility import send_link
 
 from .renderers import StaffJSONRenderer
@@ -26,9 +26,9 @@ class SendEmails(APIView):
         invalid_emails = []
         for recipient in recipients:
             try:
-                User.objects.get(email=recipient)
+                Student.objects.get(email=recipient)
                 valid_emails.append(recipient)
-            except User.DoesNotExist:
+            except Student.DoesNotExist:
                 invalid_emails.append(recipient)
                 continue
         if len(invalid_emails) > 0:

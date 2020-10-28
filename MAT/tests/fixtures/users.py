@@ -7,13 +7,14 @@ from django.contrib.auth.hashers import make_password
 from django.urls import reverse
 
 # Models
-from MAT.apps.profiles.models import User, UserProfile
+from MAT.apps.authentication.models import Tm, Student, PodLeader, User
+from MAT.apps.profiles.models import StudentProfile
 from MAT.config.settings.base import env
 
 @pytest.fixture(scope='function')
 def new_user():
-    student = User.objects.create_student(first_name="dave", last_name="kahara",
-				username="Batman", email='testy@mail.com', password='secret',cohort="mc23")
+    student = Student.objects.create(first_name="dave", last_name="kahara",
+				username="Batman1", email='testyy@mail.com', password='secret')
     return student
 
 @pytest.fixture(scope='function')
@@ -22,14 +23,15 @@ def new_user2():
         "username": "ken",
         "email": "ken@gmail.com",
         "password": make_password('ken'),
-        "is_active": "True"
+        "is_active": "True",
+        "type": "STUDENT"
     }
     return User(**params)
 
 @pytest.fixture(scope='function')
 def new_user3():
-    student = User.objects.create_student(first_name="dave", last_name="kahara",
-				username="Batman", email='testy@mail.com', password='secret',cohort="mc23")
+    student = Student.objects.create(first_name="dave", last_name="kahara",
+				username="Batman2", email='testy@mail.com', password='secret')
     student.is_verified = True
     return student
     
@@ -57,7 +59,7 @@ def new_user_with_profile(django_db_blocker, new_user):
             "gender": "Male",
             "user": new_user
         }
-        return UserProfile(**params)
+        return StudentProfile(**params)
 
 
 
@@ -72,7 +74,7 @@ def new_user_with_profile2(django_db_blocker, new_user2):
             "fullname": "MC21",
             "user": new_user2
         }
-        return UserProfile(**params)
+        return StudentProfile(**params)
 
 @pytest.fixture
 def get_or_create_token(db,client,new_student):
@@ -92,7 +94,7 @@ def profile_token(db,client,new_user):
     new_user.save()
     url = reverse('authentication:token_obtain_pair')
     my_data =  {
-        "email": "testy@mail.com",
+        "email": "testyy@mail.com",
         "password": "secret"
 	}
     response = client.post(url,data=json.dumps(my_data),
