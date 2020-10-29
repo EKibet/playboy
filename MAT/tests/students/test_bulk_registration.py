@@ -30,3 +30,23 @@ class TestStudentEndpoints:
         assert response.status_code == status.HTTP_200_OK
         assert response.data.get('error_count')  == 6
         assert response.data.get('created_count')  == 0
+
+
+    def test_only_podleader_can_upload_csv(self, client, file_data, get_or_create_token, get_or_create_admin_token):
+        """ Test podleader or admin can upload csv"""
+        student_token = get_or_create_token
+        pod_leader_token = get_or_create_admin_token
+
+        message_response = "You do not have permission to perform this action."
+
+        # test student upload
+        client.credentials(HTTP_AUTHORIZATION='Bearer '+ student_token)
+        headers = {
+            'HTTP_CONTENT_DISPOSITION': 'attachment; filename=file','HTTP_CONTENT_TYPE':'text/plain'
+        }
+        response = client.post(
+            reverse('students:create_students'), file_data, **headers)
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.data.get("detail") == message_response
+
