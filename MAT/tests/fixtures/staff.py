@@ -9,7 +9,7 @@ def new_staff():
     params = {
         "first_name": "chris",
         "last_name": "karimi",
-        "email":"chris@moringaschool.com",
-        "username":"chris"
+        "email": "chris@moringaschool.com",
+        "username": "chris"
     }
     return User(**params)

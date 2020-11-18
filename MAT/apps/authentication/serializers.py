@@ -4,7 +4,7 @@ from rest_framework.validators import UniqueValidator
 
 from MAT.apps.authentication.utility import student_cohort_assignment
 
-from .models import PodLeader, Student, Tm, User
+from .models import CohortMembership, PodLeader, Student, Tm, User
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -56,7 +56,10 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
                 )
             cohort_name = validated_data.get('cohort')
             cohort = student_cohort_assignment(cohort_name)
-            user.cohort.add(cohort)
+            # add student membership to the cohort
+            membership = CohortMembership(
+                user=user, cohort=cohort, current_cohort=True)
+            membership.save()
 
         elif role == 'TM':
             user = Tm.objects.create(
@@ -69,7 +72,10 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
                 )
             cohort_name = validated_data.get('cohort')
             cohort = student_cohort_assignment(cohort_name)
-            user.cohort.add(cohort)
+            # add tm membership to the cohort
+            membership = CohortMembership(
+                user=user, cohort=cohort, current_cohort=True)
+            membership.save()
 
         else:
             user = PodLeader.objects.create(
@@ -80,6 +86,12 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
                 password=validated_data['password'],
                 type=role
                 )
+            cohort_name = validated_data.get('cohort')
+            cohort = student_cohort_assignment(cohort_name)
+            # add pod-leader membership to the cohort
+            membership = CohortMembership(
+                user=user, cohort=cohort, current_cohort=True)
+            membership.save()
         return user
 
 class SignOutSerializer(serializers.Serializer):
