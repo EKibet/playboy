@@ -11,6 +11,7 @@ class IsOwnerOrReadOnly(BasePermission):
             return True
 
         return obj.owner == request.user
+
 class IsPodLeaderOrAdmin(BasePermission):
     '''
     Check if the user is a pod leader or admin before creating a cohort. 
@@ -18,7 +19,4 @@ class IsPodLeaderOrAdmin(BasePermission):
     def has_permission(self, request, view):
         pod_leader = request.user.type =='POD_LEADER'
         admin = request.user.type =='ADMIN'
-        return bool(
-             super().has_permission(request, view)
-             and (pod_leader or admin)
-            )
+        return bool(pod_leader or admin)

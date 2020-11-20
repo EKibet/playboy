@@ -1,5 +1,6 @@
 import json
 from datetime import datetime, timedelta
+from django.db import models
 
 import jwt
 import pytest
@@ -10,6 +11,13 @@ from django.urls import reverse
 from MAT.apps.authentication.models import Tm, Student, PodLeader, User
 from MAT.apps.profiles.models import StudentProfile
 from MAT.config.settings.base import env
+
+class Types(models.TextChoices):
+        """User types"""
+        TM = "TM", "Tm"
+        STUDENT = "STUDENT", "Student"
+        POD_LEADER = "POD_LEADER", "PodLeader"
+        ADMIN = "ADMIN", "Admin"
 
 @pytest.fixture(scope='function')
 def new_user():
@@ -34,6 +42,31 @@ def new_user3():
 				username="Batman2", email='testy@mail.com', password='secret')
     student.is_verified = True
     return student
+    
+@pytest.fixture(scope='module')
+def pod_leader():
+    params = {
+        "username": "podleader",
+        "email": "podleader@mail.com",
+        "password": make_password('test'),
+        "is_active": 'True',
+        "is_staff" : 'True',
+    }
+    return User(**params)
+
+@pytest.fixture
+def get_or_create_podleader_token(db, client, pod_leader):
+    pod_leader.type ='POD_LEADER'
+    pod_leader.save()
+    url = reverse('authentication:token_obtain_pair')
+    my_data =  {
+        "email": "podleader@mail.com",
+        "password": "test"
+	}
+    response = client.post(url,data=json.dumps(my_data),
+                                   content_type='application/json')
+    token =  response.data['access']
+    return token
     
 @pytest.fixture(scope='function')
 def new_admin_user(django_db_blocker):

@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from MAT.apps.cohorts.models import Cohort
 
 from .renderers import CohortJSONRenderer, CohortsJSONRenderer
-from .serializers import CohortSerializer,TMCohortSerializer
+from .serializers import CohortSerializer
 from rest_framework.views import APIView
 from MAT.apps.authentication.models import User
 from rest_framework.permissions import IsAdminUser
@@ -34,12 +34,13 @@ class CohortViewSet(mixins.CreateModelMixin,
         viewsets (Class): A class that simplifies the creation of CRUD functionality
         in fewer lines of code.
     """
+    permission_classes= [IsPodLeaderOrAdmin]
     queryset = Cohort.objects.all()
     serializer_class = CohortSerializer
     renderer_classes = (CohortJSONRenderer,)
 
 class TMCohortsList(APIView):
-    serializer_class = TMCohortSerializer
+    serializer_class = CohortSerializer
 
     def get(self,request):
         cohorts = request.user.cohort.all()
