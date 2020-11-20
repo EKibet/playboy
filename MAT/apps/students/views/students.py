@@ -9,9 +9,11 @@ from rest_framework.views import APIView
 from MAT.apps.authentication.models import Student
 from MAT.apps.common.pagination import CustomPagination
 from MAT.config.settings.base import env
+from MAT.apps.common.permissions import IsPodLeaderOrAdmin
 
 from MAT.apps.students.serializers import StudentSerializer
 from MAT.apps.students.renderers import (StudentJSONRenderer, StudentsJSONRenderer)
+from MAT.apps.authentication.utility import student_cohort_assignment
 
 
 class StudentInfoUploadView(APIView):  # pragma: no cover
@@ -24,6 +26,7 @@ class StudentInfoUploadView(APIView):  # pragma: no cover
     parser_classes = (FileUploadParser,)
     serializer = StudentSerializer
     renderer_classes = (StudentsJSONRenderer,)
+    permission_classes =[IsPodLeaderOrAdmin]
 
     def post(self, request, format=None):
         file = request.FILES['file']
@@ -41,20 +44,29 @@ class StudentInfoUploadView(APIView):  # pragma: no cover
         try:
             for row in reader:
                 try:
-                    Student.objects.create(username=row['Username'], email=row['email'],
-                                                password=env.str('STUDENTS_PASSWORD','moringaschool'), first_name=row['first_name'], last_name=row['second_name'],cohort=row['Class'])
-                    stats['created_count'] += 1
+                    student = Student.objects.create(username=row['Username'], email=row['email'],
+                                                password=env.str('STUDENTS_PASSWORD','moringaschool'), first_name=row['first_name'], last_name=row['second_name'])
+                    # cohort assignment
+                    cohort = student_cohort_assignment(row['Class'])
+                    student.cohort.add(cohort)
+
                     created_emails.append(row['email'])
+                    stats['created_count'] += 1
+
                 except IntegrityError:
                     existing_emails.append(row['email'])
                     stats['error_count'] += 1
             return Response(stats, status=status.HTTP_200_OK)
+            
         except KeyError:
             message = {'error': 'CSV data does not have correct format.'}
             return Response(message, status=status.HTTP_400_BAD_REQUEST)
 
 
 class StudentDetailView(APIView):
+    """
+    An api view for returning the students details view
+    """
     serializer_class = StudentSerializer
     renderer_classes = (StudentJSONRenderer,)
 
