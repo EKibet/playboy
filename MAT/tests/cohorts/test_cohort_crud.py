@@ -100,3 +100,34 @@ class TestCohortCRUD():
         response = client.get(url)
         assert response.status_code == status.HTTP_200_OK
         assert len(response.data) == 2
+
+    @pytest.mark.django_db
+    def test_get_student_att_records_by_id_successfully(self, client, get_or_create_token, create_attendance_record):
+        create_attendance_record.save()
+        current_user = User.objects.get(email="test@mail.com")
+        student_id = str(current_user.id)
+        url = reverse('cohorts:student-attendace-records', args=(student_id,))
+        token = get_or_create_token
+        client.credentials(HTTP_AUTHORIZATION='Bearer '+ token)
+        response = client.get(url)
+        assert len(response.data['results']) == 1
+        assert response.status_code == status.HTTP_200_OK
+
+    @pytest.mark.django_db
+    def test_get_student_att_records_using_invalid_studentid(self, client, get_or_create_token):
+        url = reverse('cohorts:student-attendace-records', args=(100,))
+        token = get_or_create_token
+        client.credentials(HTTP_AUTHORIZATION='Bearer '+ token)
+        response = client.get(url)
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    @pytest.mark.django_db
+    def test_get_student_att_records_nonexistent_records(self, client, get_or_create_token, new_student):
+        new_student.save()
+        current_user = User.objects.get(email="test@mail.com")
+        student_id = str(current_user.id)
+        url = reverse('cohorts:student-attendace-records', args=(student_id,))
+        token = get_or_create_token
+        client.credentials(HTTP_AUTHORIZATION='Bearer '+ token)
+        response = client.get(url)
+        assert response.status_code == status.HTTP_404_NOT_FOUND

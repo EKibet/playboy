@@ -1,16 +1,21 @@
 from rest_framework import generics, viewsets, mixins,status
 from rest_framework.response import Response
+from django.core.paginator import Paginator
+from collections import OrderedDict
+
 
 from MAT.apps.cohorts.models import Cohort
 
+from MAT.apps.common.pagination import CustomPagination
 from .renderers import CohortJSONRenderer, CohortsJSONRenderer
 from .serializers import CohortSerializer
+from MAT.apps.students.serializers import AttendanceRecordsSerializer
 from rest_framework.views import APIView
 from MAT.apps.authentication.models import User
 from rest_framework.permissions import IsAdminUser
 from MAT.apps.authentication.utility import student_cohort_assignment
 from MAT.apps.common.permissions import IsPodLeaderOrAdmin
-
+from MAT.apps.students.models import AttendanceComment, AttendanceRecords
 
 class CohortListing(generics.ListAPIView):
     """A view to provide the listing functionality for the cohorts model
@@ -74,3 +79,55 @@ class AdminAssignCohort(generics.CreateAPIView):
                 res.get('unsuccessful').append(email)
         return Response(res, status=status.HTTP_200_OK)
         
+
+class StudentAttendanceRecordsList(APIView, CustomPagination):
+    """A view to provide the listing functionality for the attendance records of a specific
+    student
+
+    Args:
+        APIView (Class): A class that will help in listing records.
+    """
+    serializer_class = AttendanceRecordsSerializer
+
+    def get_paginated_response(self, data, user, att_summary):
+        return Response(OrderedDict([
+            ('count', self.page.paginator.count),
+            ('next', self.get_next_link()),
+            ('previous', self.get_previous_link()),
+            ('results', data),
+            ('student', {
+                "email": user.email,
+                "id": user.id,
+                "name": user.first_name + " " + user.last_name,
+                "cohorts": user.current_cohorts
+            }),
+            ("summary", att_summary)
+        ]))
+
+    def get(self, request, student_id):
+        user = User.objects.filter(pk=student_id)
+
+        if not user or user[0].type != 'STUDENT':
+            return Response({
+                "message": "A student with that student_id does not exist"
+            }, status=status.HTTP_404_NOT_FOUND)
+
+        present_att_record = AttendanceRecords.objects.filter(user_id=student_id, is_present=True).count();
+        att_records = AttendanceRecords.objects.filter(user_id=student_id)
+
+        if att_records.count() == 0:
+            return Response({
+                "message": "The student has no existing attendance records"
+            }, status=status.HTTP_404_NOT_FOUND)
+
+        percentage_attendance = (present_att_record/att_records.count()) * 100;
+
+        att_summary = {
+            "overall_percentage": percentage_attendance
+        }
+
+        serializer = self.serializer_class(att_records, many=True, allow_empty=True)
+        paginated_data = self.paginate_queryset(serializer.data, request)
+        response = self.get_paginated_response(paginated_data, user[0], att_summary)
+
+        return response
