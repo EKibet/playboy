@@ -34,13 +34,13 @@ class TestCohortCRUD():
         """Test creating a cohort """
         
         data = {
-            "cohort_name": "MC22"
+            "cohort_name": "MC31",
+            "start_date": "2020-11-20"
         }
         token = get_or_create_podleader_token
         url = reverse('cohorts:cohorts-list')
         client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
         response = client.post(url, data)
-        
         assert response.status_code == status.HTTP_201_CREATED
 
     @pytest.mark.django_db
@@ -61,7 +61,7 @@ class TestCohortCRUD():
         """Test editing of an existing cohort """
         new_cohort.save()
         update_data = {
-            "cohort_name": "MC01"
+            "name": "MC134",
         }
         token = get_or_create_podleader_token
         latest_cohort = Cohort.objects.latest('id')
@@ -72,7 +72,7 @@ class TestCohortCRUD():
                             content_type='application/json')
         latest_cohort = Cohort.objects.latest('id')
         assert response.status_code == status.HTTP_200_OK
-        assert latest_cohort.name == "MC01"
+        assert latest_cohort.name == "MC134"
 
     @pytest.mark.django_db
     def test_delete_cohort_succeeds(self, client, get_or_create_podleader_token, new_cohort):
@@ -131,3 +131,34 @@ class TestCohortCRUD():
         client.credentials(HTTP_AUTHORIZATION='Bearer '+ token)
         response = client.get(url)
         assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+    @pytest.mark.django_db
+    def test_create_cohort_with_invalid_name_fails(self, client, get_or_create_podleader_token):
+        """Test creating a cohort with invalid name """
+        
+        data = {
+            "cohort_name": "MCZ31",
+            "start_date": "2020-11-20"
+        }
+        token = get_or_create_podleader_token
+        url = reverse('cohorts:cohorts-list')
+        client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
+        response = client.post(url, data)
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.data.get('name')[0] == "Invalid cohort name"
+
+    @pytest.mark.django_db
+    def test_create_cohort_with_existing_name_fails(self, client,new_cohort, get_or_create_podleader_token):
+        """Test creating a cohort with existing name """
+        new_cohort.save()
+        data = {
+            "cohort_name": "mc01",
+            "start_date": "2020-11-20"
+        }
+        token = get_or_create_podleader_token
+        url = reverse('cohorts:cohorts-list')
+        client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
+        response = client.post(url, data)
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.data.get('name')[0] == "Cohort {} already exists".format(data.get('cohort_name').upper())

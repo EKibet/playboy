@@ -1,4 +1,7 @@
+import string
+
 from rest_framework import generics, viewsets, mixins,status
+from rest_framework.exceptions import ParseError
 from rest_framework.response import Response
 from django.core.paginator import Paginator
 from collections import OrderedDict
@@ -44,6 +47,20 @@ class CohortViewSet(mixins.CreateModelMixin,
     serializer_class = CohortSerializer
     renderer_classes = (CohortJSONRenderer,)
 
+    def create(self, request, **kwargs):
+        cohort_data = {"name": request.data.get('cohort_name').upper(),
+       "end_date": request.data.get('end_date'), "start_date": request.data.get('start_date')}
+
+        serializer = self.serializer_class(
+                data=cohort_data
+            )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data,
+                                status=status.HTTP_201_CREATED)
+
+
+
 class TMCohortsList(APIView):
     serializer_class = CohortSerializer
 
@@ -78,7 +95,7 @@ class AdminAssignCohort(generics.CreateAPIView):
             except:
                 res.get('unsuccessful').append(email)
         return Response(res, status=status.HTTP_200_OK)
-        
+
 
 class StudentAttendanceRecordsList(APIView, CustomPagination):
     """A view to provide the listing functionality for the attendance records of a specific
