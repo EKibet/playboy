@@ -35,7 +35,7 @@ class TestTmDetails():
         cohort_data = dict(response.data.get('current_cohorts')[0])
         assert response.status_code == status.HTTP_200_OK
         assert response.data.get('first_name') == new_tm.first_name
-        assert cohort_data['cohort_name'] == new_cohort.cohort_name
+        assert cohort_data['cohort_name'] == new_cohort.name
 
     @pytest.mark.django_db
     def test_non_existent_tm_details_fails(self, client, get_or_create_token):
