@@ -232,3 +232,5 @@ CLOUDINARY = {
     'api_secret': os.getenv('API_SECRET'),
 }
 CLOUDINARY_FOLDER = os.getenv('CLOUD_FOLDER')
+
+    
