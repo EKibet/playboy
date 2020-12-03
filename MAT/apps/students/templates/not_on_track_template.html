@@ -1,0 +1,219 @@
+<head>
+    <style>
+        body {
+            width: 100%;
+            background-color: #ffffff;
+            margin: 0;
+            padding: 0;
+            -webkit-font-smoothing: antialiased;
+            font-family: Georgia, Times, serif
+        }
+
+        table {
+            border-collapse: collapse;
+            color: #303032;
+        }
+
+        .border-complete {
+            border-top: 1px solid #dadada;
+            border-left: 1px solid #dadada;
+            border-right: 1px solid #dadada;
+        }
+
+        .border-lr {
+            border-left: 1px solid #dadada;
+            border-right: 1px solid #dadada;
+        }
+
+        #banner-txt {
+            color: rgb(8, 8, 8);
+            padding: 15px 32px 0px 32px;
+            font-family: arial;
+            font-size: 13px;
+            text-align: center;
+        }
+
+        p#footer-txt {
+            text-align: center;
+            color: #303032;
+            font-family: arial;
+            font-size: 12px;
+            padding: 0 32px;
+        }
+
+
+
+        @media only screen and (max-width: 640px) {
+            body[yahoo] .deviceWidth {
+                width: 440px !important;
+                padding: 0;
+            }
+
+            body[yahoo] .center {
+                text-align: center !important;
+            }
+
+        }
+
+        @media only screen and (max-width: 479px) {
+            body[yahoo] .deviceWidth {
+                width: 280px !important;
+                padding: 0;
+            }
+
+            body[yahoo] .center {
+                text-align: center !important;
+            }
+
+        }
+
+        .greenBackground {
+            width: 618px;
+            height: 117px;
+            margin: 0 0 25 0;
+            padding: 7px 183px 7px 221px;
+            background-color: #8f9948;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        @supports (font-size-adjust: 1) {
+            #typography-test {
+                font-size-adjust: 0.5;
+            }
+        }
+
+        #typography-test {
+            width: 60ch;
+            text-align: justify;
+            max-width: 100%;
+        }
+
+        #typography-test p {
+            margin: calc(1ex / 0.32) 0;
+        }
+
+        #typography-test h2 {
+            font-size: 2rem;
+            line-height: calc(1ex / 0.42);
+            margin: calc(1ex / 0.42) 0;
+        }
+
+        #typography-test h3 {
+            font-size: 1.75rem;
+            line-height: calc(1ex / 0.38);
+            margin: calc(1ex / 0.38) 0;
+        }
+
+        #typography-test h4 {
+            font-size: 1.5rem;
+            line-height: calc(1ex / 0.37);
+            margin: calc(1ex / 0.37) 0;
+        }
+
+        a {
+            color: #006fc6;
+        }
+    </style>
+</head>
+
+<body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0" yahoo="fix"
+    style="font-family: Georgia, Times, serif">
+
+    <table width="600" border="0" cellpadding="0" cellspacing="0" align="center" class="border-complete deviceWidth">
+        <tr>
+            <td width="100%">
+                <table width="600" height="151" cellpadding="0" cellspacing="0" align="center"
+                    class="border-lr deviceWidth" class="content">
+
+                    <tr>
+                        <td align="center">
+                            <div class="width">
+                                <div id="typography-test">
+                                    <h4 align='center'>Not on track</h4>
+                                    <p>Hello {{username}}</p>
+                                    <p>To give you an update on how you are doing in class, you are currently not on
+                                        track to move forward to the next
+                                        module
+                                        but have an opportunity to improve before final decisions are made. Please
+                                        continue reading to understand why this
+                                        is,
+                                        and how you can improve.
+                                    </p>
+                                    <p>As you know, Moringa School looks at 3 major aspects of your learning in
+                                        considering whether you proceed
+                                        to the next module:
+                                        To give you an update on how you are doing in class, you are currently not on
+                                        track to move forward to the next
+                                        module but have an opportunity to improve before final decisions are made.
+                                        Please continue reading to understand why
+                                        this is, and how you can improve.
+
+                                    </p>
+                                    <ul>
+                                        <li>Attendance and punctuality.</li>
+                                        <li>Completion and quality of your IPs.</li>
+                                        <li>Positive contributions to the classroom environment; are you working well
+                                            with others, and interpersonal skills. Your work has been good so far, and
+                                            we want to encourage you to keep the momentum going.</li>
+                                    </ul>
+                                    <p>As it stands:</p>
+                                    <ul>
+                                        <li>Your attendance out of 100 is {{attendance}}.</li>
+                                    </ul>
+                                    <p>As for your IPs:</p>
+                                    <ul>
+                                        {% for ip,total in ips.items%}
+                                        {% for ip_no,score in scores.items%}
+                                        {%if ip_no == ip %}
+
+                                        <li>{{ip}} out of {{total}} you have {{score}}. </li>
+                                        {%endif%}
+                                        {% endfor%}
+                                        {% endfor%}
+                                    </ul>
+                                    <p>Based on the above scores we recommend that you spend the rest of the module
+                                        working on improving the
+                                        following.</p>
+                                    {%if improvements%}
+
+                                    <ul>
+                                        <li>{{improvements}}</li>
+                                    </ul>
+                                    {%else%}
+                                    Based on the above scores we recommend that you spend the rest of the module working
+                                    on keeping up with your attendance,
+                                    IP submissions and quality, and your interpersonal dynamics. Your work has been good
+                                    so far, and we want to encourage
+                                    you to keep the momentum going.
+                                    {%endif%}
+
+                                    <p>This is an automatic email. Please do not reply to it. Follow up with your TM if
+                                        you have any questions
+                                        and fill out <a href="https://goo.gl/forms/0IirlKjvqZ7Qwyt72"
+                                            target="_blank">this form.</a></p>
+
+                                    <p>Best,</p>
+                                    <p>Classroom Team</p>
+
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+
+                <!-- Footer -->
+                <table width="600" border="0" cellpadding="0" cellspacing="0" align="center"
+                    class="border-complete deviceWidth" bgcolor="#eeeeed">
+
+                    <tr>
+                        <td style="text-align: center;">
+                            <p id="footer-txt"> <b>© 2020 Moringa Student Mailer. All rights reserved.</b>
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+    </table>
+</body>

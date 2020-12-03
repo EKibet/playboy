@@ -13,10 +13,10 @@ def change_time():
     check_out=os.environ.get('CHECKOUT_TIME')
     check_out='25:00:00'
     return check_out
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='function')
 def file_data():
     params = {
-        'file': open(BASE_DIR.path('MAT/tests/fixtures/test.csv'), 'rb')
+        'file': open(BASE_DIR.path('MAT/tests/fixtures/final_list_sample_data.csv'), 'rb')
     }
 
     return params

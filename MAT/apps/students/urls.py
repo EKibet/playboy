@@ -4,6 +4,7 @@ from MAT.apps.students.views import students, attendance, comments_views
 from MAT.apps.students.views.password_reset import SendPasswordResetEmail, \
     ResetPasswordView
 from MAT.apps.students.views.verification import StudentVerificationAPIVIew
+from MAT.apps.students.views import status_emails
 
 app_name = 'students'
 
@@ -33,5 +34,8 @@ urlpatterns = [
          name='retrieve_attendance_records_comment'),
 
     path('students/attendance-records/', attendance.RetrieveAttendanceRecordsView.as_view(),
-         name='attendance_records')
+         name='attendance_records'),
+     path('students/send-final-status-emails/',status_emails.FinalListEmail.as_view(),name="send_final_status_emails"),
+     path('students/send-status-emails/',status_emails.StatusEmail.as_view(),name="send_status_emails")
+
 ]
