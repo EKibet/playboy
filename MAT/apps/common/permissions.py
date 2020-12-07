@@ -20,3 +20,15 @@ class IsPodLeaderOrAdmin(BasePermission):
         pod_leader = request.user.type =='POD_LEADER'
         admin = request.user.type =='ADMIN'
         return bool(pod_leader or admin)
+
+class IsAdminOrReadOnly(BasePermission):
+    """
+    The request is authenticated as an Admin, or is a read-only request.
+    """
+
+    def has_permission(self, request, view):
+        if (request.method in SAFE_METHODS or
+            request.user and
+            request.user.is_staff):
+            return True
+        return False

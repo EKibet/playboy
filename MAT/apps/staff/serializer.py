@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from MAT.apps.authentication.models import User, Tm
+from MAT.apps.authentication.models import User, Tm, PodLeader
 from MAT.apps.cohorts.serializers import CohortSerializer
 
 
@@ -26,4 +26,14 @@ class TMSerializer(serializers.ModelSerializer):
         read_only_fields = ('created_at', 'updated_at', 'username', 'email',)
         depth = 1
 
+
+class PodLeaderSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = PodLeader
+        fields = ('first_name', 'last_name', 'email',
+                  'username', 'current_cohorts', 'deleted')
+
+        read_only_fields = ('created_at', 'updated_at', 'username', 'email',)
+        depth = 1
 
