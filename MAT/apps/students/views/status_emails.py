@@ -39,13 +39,13 @@ def process_final_list(records,next_module=None,cc_list=None):
             'next_module':next_module,
             'reasons':row.get('Reason','')
             }   
-            if row['Final Recommendation'] == '' or row['Final Recommendation'].lower() == 'yes':
+            if row['Final Recommendation'] == '' or row['Final Recommendation'].lower() == 'pass':
                 pass_html_message = render_to_string('full_acceptance_email_template.html', dynamic_data)
                 mailing_list.append( ('Congratulations! Passing to Next Phase - [attendance, completion, interpersonal, quality] Condition', '.', pass_html_message,from_email,[row['Email']],cc_list))
-            elif row['Final Recommendation'].lower()=='no':
+            elif row['Final Recommendation'].lower()=='failed':
                 failed_html_message = render_to_string('not_passing_email_template.html', dynamic_data)
                 mailing_list.append( ('Not Passing to the Next Phase - [attendance, completion, quality, interpersonal]', '.', failed_html_message,from_email,[row['Email']],cc_list))            
-            elif row['Final Recommendation'].lower()=='probation':
+            elif row['Final Recommendation'].lower()=='pass on probation':
                 probation_html_message = render_to_string('probation_email_template.html', dynamic_data)
                 mailing_list.append( ('Passing to Next Phase - Probation', '.', probation_html_message,from_email,[row['Email']],cc_list))            
 
@@ -105,10 +105,10 @@ def process_module_status_list(records,cc_list=None):
                 'scores':{ip_no.split('/')[0]:row[ip_no] for ip_no in ip_specifics.get('ips') },
                 'improvements':row.get('Reason','')
             }              
-            if row['Status Recommendation'] == '' or row['Status Recommendation'].lower() == 'yes':   
+            if row['Status Recommendation'] == '' or row['Status Recommendation'].lower() == 'proceeding':   
                 pass_html_message = render_to_string('on_track_template.html',dynamic_data)
                 mailing_list.append( ('A Quick status Update!', '.', pass_html_message,from_email,[row['Email']],cc_list))
-            elif row['Status Recommendation'].lower()=='no':
+            elif row['Status Recommendation'].lower()=='failed module':
                 not_on_track_html_message = render_to_string('not_on_track_template.html',dynamic_data )
                 mailing_list.append( ('A Quick status Update!', '.', not_on_track_html_message,from_email,[row['Email']],cc_list))         
 
@@ -146,6 +146,7 @@ class FinalListEmail(APIView):
             dataframe.dropna(axis='columns',how='all',inplace=True)
             cohort_list = CohortMembership.objects.filter(cohort__id=int(request.data.get('cohort_id'))) 
             cc_list=[cohort.user for cohort in cohort_list]
+            
             response=process_final_list(dataframe,request.data['next_module'],cc_list)               
         except TypeError as t_error:
             response={}
