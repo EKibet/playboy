@@ -6,7 +6,19 @@ from .models import StudentProfile
 
 
 class ProfileSerializer(serializers.ModelSerializer):
+    TRACK_CHOICES = (
+        ('prep', 'Prep'),
+        ('angular', 'Angular'),
+        ('flask', 'Flask'),
+        ('java', 'Java'),
+        ('django', 'Django'),
+        ('android', 'Android'),
+        ('dsprep', 'DSPrep'),
+        ('dscore', 'DSCore'),
+    )
+
     username = serializers.CharField(source='user.username', read_only=True)
+    current_track = serializers.ChoiceField(choices=TRACK_CHOICES)
     image = serializers.URLField(required=True)
     profile_picture = serializers.ImageField(
         required=False, allow_empty_file=True)

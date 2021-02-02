@@ -9,7 +9,7 @@ from django.urls import reverse
 
 # Models
 from MAT.apps.authentication.models import Tm, Student, PodLeader, User
-from MAT.apps.profiles.models import StudentProfile
+from MAT.apps.profiles.models import StudentProfile, StudentCurrentTrack
 from MAT.config.settings.base import env
 
 class Types(models.TextChoices):
@@ -172,3 +172,14 @@ def create_expired_token(db, new_user):
     }
     jwt_token = jwt.encode(payload, JWT_SECRET, JWT_ALGORITHM)
     return jwt_token
+
+
+@pytest.fixture(scope='function')
+def create_prep_track():
+    track = StudentCurrentTrack.objects.create(track="javscript")
+    return track
+
+@pytest.fixture(scope='function')
+def create_core_track():
+    track = StudentCurrentTrack.objects.create(track="flask")
+    return track

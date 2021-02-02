@@ -113,3 +113,40 @@ class TestUserProfile():
 
             assert self.upload_called
             assert cloudinary_url == 'http://sample.com/mock.png'
+
+    
+    @pytest.mark.django_db
+    def test_only_pod_leader_can_upload_track(self, client, update_tracks_data,get_or_create_admin_token, get_or_create_token):
+        student_token = get_or_create_token
+        pod_leader_token = get_or_create_admin_token
+
+        message_response = "You do not have permission to perform this action."
+        client.credentials(HTTP_AUTHORIZATION='Bearer ' + student_token)
+        headers = {
+            'HTTP_CONTENT_DISPOSITION': 'attachment; filename=file','HTTP_CONTENT_TYPE':'text/plain'
+        }
+        response = client.patch(
+            reverse('profiles:update_tracks'), update_tracks_data, **headers)
+        
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.data.get("detail") == message_response
+
+    @pytest.mark.django_db
+    def test_upload_track_fails_with_bad_csv(self, client, update_track_wrong_format,get_or_create_admin_token):
+        """ test that update track fails with bad csv file """
+
+        token = get_or_create_admin_token
+
+        # message_response = "You need to upload a csv file to update."
+        client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
+        headers = {
+            'HTTP_CONTENT_DISPOSITION': 'attachment;filename=file','HTTP_CONTENT_TYPE':'text/csv'
+        }
+        # n/b file data contains 
+        response = client.patch(
+            reverse('profiles:update_tracks'), update_track_wrong_format, **headers)
+        
+        message_response = 'CSV data does not have correct format.'
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.data.get("error") == message_response
+
