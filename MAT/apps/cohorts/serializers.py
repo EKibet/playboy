@@ -9,7 +9,7 @@ from MAT.apps.cohorts.models import Cohort
 
 def validate_name(value):
     name = ''.join([character for character in value.upper() if value and character.isalnum()])
-    if not re.match('MC[0-9]+', name):
+    if not re.match('MC[0-9]+|MPP[0-9]+|MPFT[0-9]+|DS[0-9]+', name):
         raise ValidationError('Invalid cohort name')
     if Cohort.objects.filter(name=name).exists():
         message = "Cohort {} already exists".format(name)
