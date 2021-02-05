@@ -39,13 +39,13 @@ def process_final_list(records,next_module=None,cc_list=None):
             'next_module':next_module,
             'reasons':row.get('Reason','')
             }   
-            if row['Status Recommendation'].lower() == 'yes' or row['Status Recommendation'] == 'pass':
+            if row['Final Recommendation'].lower() == 'yes' or row['Final Recommendation'] == 'pass':
                 pass_html_message = render_to_string('full_acceptance_email_template.html', dynamic_data)
                 mailing_list.append( ('Congratulations! Passing to Next Phase -Full Acceptance', '.', pass_html_message,from_email,[row['Email']],cc_list))
-            elif row['Status Recommendation'].lower()=='no' or row['Status Recommendation'].lower()=='failed':
+            elif row['Final Recommendation'].lower()=='no' or row['Final Recommendation'].lower()=='failed':
                 failed_html_message = render_to_string('not_passing_email_template.html', dynamic_data)
                 mailing_list.append( ('Not Passing to the Next Phase', '.', failed_html_message,from_email,[row['Email']],cc_list))            
-            elif row['Status Recommendation'].lower()=='probation' or row['Status Recommendation'].lower()=='pass on probation':
+            elif row['Final Recommendation'].lower()=='probation' or row['Final Recommendation'].lower()=='pass on probation':
                 probation_html_message = render_to_string('probation_email_template.html', dynamic_data)
                 mailing_list.append( ('Passing to Next Phase - Probation', '.', probation_html_message,from_email,[row['Email']],cc_list))            
 
