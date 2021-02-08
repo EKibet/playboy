@@ -10,4 +10,5 @@ urlpatterns = [
     path('staff/send-mail', SendEmails.as_view(), name='send-mail'),
     path('tm/<int:id>/', views.TmDetails.as_view(), name='tm_details'),
     path('podleader/<int:id>/', PodLeaderDetails.as_view(), name='podleader-details')
+    path('tm-listing', views.TMListingViewSet.as_view({'get':'list'}), name='tm_listing')
 ]

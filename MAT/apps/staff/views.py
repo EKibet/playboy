@@ -19,6 +19,11 @@ from .serializer import StaffListSerializer, TMSerializer, PodLeaderSerializer
 from .tasks import celery_send_link
 
 from MAT.apps.common.permissions import IsPodLeaderOrAdmin, IsAdminOrReadOnly
+from .renderers import StaffJSONRenderer, TmJSONRenderer
+from .serializer import StaffListSerializer, TMSerializer,TMListSerializer
+from .tasks import celery_send_link
+from rest_framework import viewsets
+from MAT.apps.common.permissions import IsPodLeaderOrAdmin
 
 
 class SendEmails(APIView):
@@ -94,6 +99,24 @@ class TmDetails(APIView):
         staff = get_object_or_404(Tm, pk=kwargs['id'])
         staff.delete()
         return Response("TM deleted", status=status.HTTP_204_NO_CONTENT)
+
+class TMListingViewSet(viewsets.ViewSet):
+    """
+    API endpoint for listing TMs by emails
+
+    """
+    queryset = Tm.objects.all()
+    serializer_class = TMListSerializer
+
+    def list(self,request):
+        tms = Tm.objects.all()
+        serializer = TMListSerializer(tms, many=True)
+        return Response(serializer.data)
+
+
+
+
+
 
 
 class PodLeaderDetails(APIView):
