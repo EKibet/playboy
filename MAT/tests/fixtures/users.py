@@ -50,10 +50,20 @@ def pod_leader():
         "email": "podleader@mail.com",
         "password": make_password('test'),
         "is_active": 'True',
-        "is_staff" : 'True',
+        "is_staff" : 'False',#changed this to false
     }
     return User(**params)
 
+@pytest.fixture(scope='function')
+def pod_leader2():
+    pod_leader = PodLeader.objects.create(
+        first_name="pod", 
+        last_name="leader",
+        username="kiongozi", 
+        email='pod@mail.com', 
+        password='secret')
+    return pod_leader
+    
 @pytest.fixture
 def get_or_create_podleader_token(db, client, pod_leader):
     pod_leader.type ='POD_LEADER'
