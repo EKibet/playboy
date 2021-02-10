@@ -1,34 +1,27 @@
-# pull official base image
-FROM python:3.7-alpine
+# For more information, please refer to https://aka.ms/vscode-docker-python
+FROM python:3.7-slim-buster
 
-# set work directory
-WORKDIR /srv/mat-api
+EXPOSE 8000
 
-# set environment variables
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+# Keeps Python from generating .pyc files in the container
+ENV PYTHONDONTWRITEBYTECODE=1
 
-# install psycopg2
-RUN apk update \
-    && apk add --virtual build-deps gcc python3-dev musl-dev \
-    && apk add postgresql-dev \
-    && pip install psycopg2 \
-    && apk del build-deps \
-    && apk install python3-pip
+# Turns off buffering for easier container logging
+ENV PYTHONUNBUFFERED=1
 
-# install dependencies
+# Install pip requirements
 RUN pip3 install pipenv
-RUN pipenv --python 3.7
-RUN exit
-RUN pipenv shell
-COPY ./Pipfile.lock /srv/mat-api/Pipfile.lock
-RUN pipenv sync
+COPY ./Pipfile* ./
 
-# copy entrypoint-prod.sh
-COPY ./entrypoint.sh /srv/mat-api/entrypoint.sh
+# install the dependencis to the system wide environment
+RUN pipenv install --system
 
-# copy project
-COPY . /srv/mat-api
+WORKDIR /app
+COPY . /app
+# Switching to a non-root user, please refer to https://aka.ms/vscode-docker-python-user-rights
+RUN useradd appuser && chown -R appuser /app
+USER appuser
 
-# run entrypoint.prod.sh
-ENTRYPOINT ["/srv/mat-api/MAT/entrypoint.sh"]
+# During debugging, this entry point will be overridden. For more information, please refer to https://aka.ms/vscode-docker-python-debug
+# File wsgi.py was not found in subfolder: 'mat-api'. Please enter the Python path to wsgi file.
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "MAT.config.wsgi"]

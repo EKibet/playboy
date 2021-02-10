@@ -22,4 +22,10 @@ set_env_vars:
 serve:
 	python3 manage.py runserver
 
+start-dev:
+	docker-compose up
+
+build-dev:
+	docker-compose build
+
 .PHONY: set_env_vars
