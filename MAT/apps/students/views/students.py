@@ -5,6 +5,7 @@ from rest_framework import status, generics
 from rest_framework.parsers import FileUploadParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django_filters.rest_framework import DjangoFilterBackend
 
 from MAT.apps.authentication.models import Student
 from MAT.apps.common.pagination import CustomPagination
@@ -105,5 +106,7 @@ class StudentListAPIView(generics.ListAPIView):
     queryset = Student.objects.filter(is_active=True)
     serializer_class = StudentSerializer
     renderer_classes = (StudentsJSONRenderer,)
+    filter_backends = [DjangoFilterBackend,]
+    filterset_fields = ['cohort__id',]
 
 

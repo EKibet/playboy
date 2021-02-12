@@ -28,6 +28,7 @@ django-extensions = "*"
 djangorestframework-simplejwt = "*"
 djangorestframework = "*"
 pandas = "*"
+django-filter ='*'
 
 [requires]
 python_version = "3.7"
