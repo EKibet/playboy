@@ -18,3 +18,11 @@ class TmJSONRenderer(JSONRenderer):
         return json.dumps({
             'tm': data
         })
+
+class PodLeaderRenderer(JSONRenderer):
+    charset = 'utf-8'
+
+    def render(self, data, media_type=None, renderer_context=None):
+        return json.dumps({
+            'pod_leader': data
+        })

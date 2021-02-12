@@ -1,14 +1,4 @@
-Student,Student ID,Email,Notes,IP1/20,IP2/16,IP3/40,IP4/20,Attendance,Status,Status Recommendation,Final Recommendation,Reason,Admission Tags,,,,
-"Edgar, Kibet",1234,kibetedgar@gmail.com,16,16,14,18,23,100,Proceeding,Proceeding,Pass,,,,,,
-"Luke, Graham",1234,kibetedgar@gmail.com,16,16,14,18,23,100,Proceeding,Failed module,Failed,,,,,,
-"Jane, Doe",1234,kibetedgar@gmail.com,,16,14,18,23,100,Proceeding,Proceeding,Pass on Probation,,,,,,
-,,,,,,,,,,,,,,,,Deferred students,1
-,,,,,,,,,,,,,,,,Students that failed the module,0
-,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,
-,,,,,,,,,,Status Recommendation,,,,,,,
+Student,Student ID,Email,Notes,IP1/31,IP2/22,IP3/22,IP4/28,Attendance,Status,Status Recommendation,Final Recommendation,Reason,Admission notes,Access check,Admission Tag
+"Cynthia, Kasambuli",,cynthia.kasambuli@moringaschool.com,,25,17.5,,,100,On track,Yes,pass,,,Access,
+"Ken, Githaiga",,ken.githaiga@moringaschool.com,,28,15.5,,,100,On track,Yes,Probation,,,Access,
+"Edgar, Kibet",,kibetedgar@gmail.com,,28,14,,,100,not on track,No,failed,,,Access,
