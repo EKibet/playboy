@@ -5,6 +5,7 @@ from MAT.apps.cohorts.serializers import CohortSerializer
 
 
 class StaffListSerializer(serializers.ModelSerializer):
+
     cohort = CohortSerializer(many=True, read_only=True)
 
     class Meta:
@@ -36,4 +37,9 @@ class PodLeaderSerializer(serializers.ModelSerializer):
 
         read_only_fields = ('created_at', 'updated_at', 'username', 'email',)
         depth = 1
+class TMListSerializer(serializers.ModelSerializer):
 
+    class Meta:
+        model = Tm
+        fields =('email',)
+    
