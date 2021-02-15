@@ -30,11 +30,53 @@ class TestCohortCRUD():
         assert str(saved_cohort) == "MC01"
 
     @pytest.mark.django_db
-    def test_create_cohort_succeeds(self, client, get_or_create_podleader_token):
-        """Test creating a cohort """
+    def test_create_core_cohort_succeeds(self, client, get_or_create_podleader_token):
+        """Test creating a core cohort """
         
         data = {
             "cohort_name": "MC31",
+            "start_date": "2020-11-20"
+        }
+        token = get_or_create_podleader_token
+        url = reverse('cohorts:cohorts-list')
+        client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
+        response = client.post(url, data)
+        assert response.status_code == status.HTTP_201_CREATED
+    
+    @pytest.mark.django_db
+    def test_create_prep_cohort_succeeds(self, client, get_or_create_podleader_token):
+        """Test creating a prep cohort """
+        
+        data = {
+            "cohort_name": "MPFT31",
+            "start_date": "2020-11-20"
+        }
+        token = get_or_create_podleader_token
+        url = reverse('cohorts:cohorts-list')
+        client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
+        response = client.post(url, data)
+        assert response.status_code == status.HTTP_201_CREATED
+    
+    @pytest.mark.django_db
+    def test_create_ds_cohort_succeeds(self, client, get_or_create_podleader_token):
+        """Test creating a ds cohort """
+        
+        data = {
+            "cohort_name": "DS31",
+            "start_date": "2020-11-20"
+        }
+        token = get_or_create_podleader_token
+        url = reverse('cohorts:cohorts-list')
+        client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
+        response = client.post(url, data)
+        assert response.status_code == status.HTTP_201_CREATED
+
+    @pytest.mark.django_db
+    def test_create_pre_prep_cohort_succeeds(self, client, get_or_create_podleader_token):
+        """Test creating a pre prep cohort """
+        
+        data = {
+            "cohort_name": "MPP31",
             "start_date": "2020-11-20"
         }
         token = get_or_create_podleader_token
