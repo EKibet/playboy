@@ -23,4 +23,5 @@ def send_mass_status_mail(datatuple, fail_silently=False, user=None, password=No
         message.attach_alternative(html, 'text/html')
         messages.append(message)
     connection = connection or get_connection(username=user, password=password, fail_silently=False)        
+    # import pdb; pdb.set_trace()
     return connection.send_messages(messages)

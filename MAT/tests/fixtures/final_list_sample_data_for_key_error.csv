@@ -1,6 +1,6 @@
 Student,Student ID,Email,Notes,IP1/20,IP2/16,IP3/40,IP4/20,Attendance,Status,Status Recommendation,Final Recommendation,Reason,Admission Tags,,,,
-"Edgar, Kibet",1234,kibetedgar@gmail.com,16,16,14,18,23,100,Yes,Yes,Yes,,,,,,
-"Luke, Graham",1234,kibetedgar@gmail.com,16,16,14,18,23,100,Yes,No,No,,,,,,
-"Jane, Doe",1234,kibetedgar@gmail.com,,16,14,18,23,100,Yes,Yes,Probation,,,,,,
+"Edgar, Kibet",1234,kibetedgar@gmail.com,16,16,14,18,23,100,Proceeding,Proceeding,Proceeding,,,,,,
+"Luke, Graham",1234,kibetedgar@gmail.com,16,16,14,18,23,100,Proceeding,Failed,Failed,,,,,,
+"Jane, Doe",1234,kibetedgar@gmail.com,,16,14,18,23,100,Proceeding,Proceeding,Proceeding on Probation,,,,,,
 ,,,,,,,,,,,,,,,,Deferred students,1
 ,,,,,,,,,,,,,,,,Students that failed the module,0

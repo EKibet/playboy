@@ -146,6 +146,7 @@ class FinalListEmail(APIView):
             dataframe.dropna(axis='columns',how='all',inplace=True)
             cohort_list = CohortMembership.objects.filter(cohort__id=int(request.data.get('cohort_id'))) 
             cc_list=[cohort.user for cohort in cohort_list]
+            
             response=process_final_list(dataframe,request.data['next_module'],cc_list)               
         except TypeError as t_error:
             response={}
