@@ -53,7 +53,7 @@ class SendEmails(APIView):
                        + timedelta(hours=48)}
             token = jwt.encode(payload,
                                os.getenv('SECRET_KEY'),
-                               algorithm='HS256').decode('utf-8')
+                               algorithm='HS256')
             url = '/students/verify/'
             template = 'student_invite_template.html'
 

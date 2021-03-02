@@ -36,9 +36,11 @@ class SendPasswordResetEmail(APIView):
                        "exp": datetime.utcnow()
                        + timedelta(minutes=20)
                        }
+            # import pdb; pdb.set_trace()
             token = jwt.encode(payload,
                                env.str('SECRET_KEY'),
-                               algorithm='HS256').decode('utf-8')
+                               algorithm='HS256')
+            
             url = '/confirm-password/'
 
             template = 'password_reset.html'

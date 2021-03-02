@@ -24,7 +24,7 @@ class StudentVerificationAPIVIew(generics.GenericAPIView):
         try:
             payload = jwt.decode(token, os.getenv(
                 'SECRET_KEY'), algorithms=['HS256'])
-        except jwt.ExpiredSignature:
+        except jwt.ExpiredSignatureError:
             msg = "Token has expired, please generate a new one"
             raise exceptions.AuthenticationFailed(msg)
         except jwt.DecodeError:
