@@ -107,7 +107,7 @@ class TestStudentsList:
                       'token': create_expired_token})
         response = client.get(url)
         assert response.data.get(
-            'detail') == "Error decoding token, please generate a new one."
+            'detail') == "Token has expired, please generate a new one"
 
     @pytest.mark.django_db
     def test_verify_student_account(self, client, new_student, get_or_create_token):
