@@ -106,6 +106,7 @@ class Student(User):
 
     class Meta:
         proxy = True
+        ordering=['-created_at','-updated_at']
 
 class Tm(User):
     """ Class to create technical mentor objects & associated attributes"""
