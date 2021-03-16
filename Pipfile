@@ -29,6 +29,7 @@ djangorestframework-simplejwt = "*"
 djangorestframework = "*"
 pandas = "*"
 django-filter ='*'
+numpy = "*"
 
 [requires]
 python_version = "3.7"

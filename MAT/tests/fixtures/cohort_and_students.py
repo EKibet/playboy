@@ -20,8 +20,23 @@ def file_data():
     }
 
     return params
+
 @pytest.fixture(scope="function")
 def create_attendance_record(new_user):
     new_user.save()
     current_user=Student.objects.get(email="test@mail.com")
     return AttendanceRecords.objects.create(user_id=current_user)
+
+@pytest.fixture(scope='function')
+def update_track_wrong_format():
+    params = {
+        'file': open(BASE_DIR.path('MAT/tests/fixtures/update_students_tracks.csv'), 'rb')
+    }
+    return params
+
+@pytest.fixture(scope='function')
+def update_tracks_data():
+    params = {
+        'file': open(BASE_DIR.path('MAT/tests/fixtures/update_students_tracks.csv'), 'rb')
+    }
+    return params
