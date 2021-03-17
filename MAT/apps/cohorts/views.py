@@ -26,6 +26,7 @@ class CohortListing(generics.ListAPIView):
     Args:
         generics (Class): A generic class that will help in cohort listing.
     """
+    permission_classes = [IsPodLeaderOrAdmin]
     pagination_class = None
     queryset = Cohort.objects.all()
     serializer_class = CohortSerializer
