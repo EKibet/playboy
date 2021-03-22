@@ -30,6 +30,7 @@ djangorestframework = "*"
 pandas = "*"
 django-filter ='*'
 numpy = "*"
+gunicorn = "*"
 
 [requires]
 python_version = "3.7"

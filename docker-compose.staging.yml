@@ -1,0 +1,92 @@
+version: '3.4'
+
+services:
+  db:
+    container_name: db
+    restart: unless-stopped
+    image: postgres:10.15
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file: .env
+  redis:
+    container_name: redis
+    restart: unless-stopped
+    image: "redis:5"
+  api:
+    container_name: api
+    image: mat-api:v1
+    command: sh -c "./wait-for-it.sh db:5432 && python manage.py migrate && gunicorn MAT.config.wsgi:application --bind 0.0.0.0:8000"
+    volumes:
+      - static_volume:/app/static/
+      - media_volume:/app/media
+    ports:
+      - "8000:8000"
+    env_file: .env
+    restart: unless-stopped
+    depends_on:
+      - db
+      - redis
+  celery_worker:
+    container_name: celery_worker
+    image: mat-api:v1
+    command: bash -c "./wait-for-it.sh api:8000 redis:6379 && celery -A MAT.config.settings worker --loglevel=INFO"
+    env_file: .env
+    restart: unless-stopped
+    depends_on:
+      - db
+      - redis
+      - api
+  celery_beat:
+    container_name: celery_beat
+    image: mat-api:v1
+    command: sh -c "./wait-for-it.sh api:8000 redis:6379 && celery -A MAT.config.settings beat --loglevel=INFO"
+    env_file: .env
+    restart: unless-stopped
+    depends_on:
+      - db
+      - redis
+      - api
+  webserver:
+    container_name: webserver
+    build: nginx
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "443:443"
+      - "80:80"
+    depends_on:
+      - api
+    volumes:
+      - static_volume:/app/static/
+      - media_volume:/app/media
+      - certs:/etc/nginx/certs
+      - html:/usr/share/nginx/html
+      - vhost:/etc/nginx/vhost.d
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    labels:
+      - "com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy"
+  nginx-proxy-letsencrypt:
+    container_name: letsencrypt-webserver
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    # refer to this https://letsencrypt.org/docs/staging-environment/
+    environment:
+      - DEFAULT_EMAIL:"classroom@moringaschool.com"
+      - ACME_CA_URI:https://acme-staging-v02.api.letsencrypt.org/directory
+      - NGINX_PROXY_CONTAINER:webserver
+    volumes:
+      - acme_config:/etc/acme.sh
+      - certs:/etc/nginx/certs
+      - html:/usr/share/nginx/html
+      - vhost:/etc/nginx/vhost.d
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    depends_on:
+      - webserver
+
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:
+  certs:
+  html:
+  vhost:
+  acme_config:
