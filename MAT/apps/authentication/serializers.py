@@ -5,6 +5,7 @@ from rest_framework.validators import UniqueValidator
 from MAT.apps.authentication.utility import student_cohort_assignment
 
 from .models import CohortMembership, PodLeader, Student, Tm, User
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer 
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -100,3 +101,10 @@ class SignOutSerializer(serializers.Serializer):
 class SocialAuthSerializer(serializers.Serializer):
 
     token = serializers.CharField(required=True, allow_blank=False)
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls,user):
+        token = super().get_token(user)
+        token['role']=user.type
+        return token
