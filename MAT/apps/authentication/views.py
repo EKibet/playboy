@@ -11,13 +11,14 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 from MAT.apps.authentication.models import User
 from MAT.config.settings.base import env
 
 from . import models
 from .models import User
-from .serializers import SignOutSerializer, UserRegistrationSerializer, SocialAuthSerializer
+from .serializers import SignOutSerializer, UserRegistrationSerializer, SocialAuthSerializer, CustomTokenObtainPairSerializer
 
 
 class SingleUserRegistrationView(generics.CreateAPIView):
@@ -106,3 +107,7 @@ class SocialAuthenticationView(APIView):
             'message': 'token is expired or not issued by google',
             }
             return Response(message, status= status.HTTP_401_UNAUTHORIZED)
+
+class SigninView(TokenObtainPairView):
+    permission_classes = (AllowAny,)
+    serializer_class = CustomTokenObtainPairSerializer
