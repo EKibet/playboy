@@ -41,7 +41,7 @@ class SendPasswordResetEmail(APIView):
                                env.str('SECRET_KEY'),
                                algorithm='HS256')
             
-            url = '/confirm-password/'
+            url = 'auth/confirm-password/'
 
             template = 'password_reset.html'
 

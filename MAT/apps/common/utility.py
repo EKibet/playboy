@@ -18,9 +18,9 @@ def send_link(**kwargs):
     url = kwargs.get('url')
     template = kwargs.get('template')
 
-    from_email, to_email = EMAIL_HOST_USER, email
+    from_email, to_email = env.str('FROM_EMAIL'), email
     password = env.str('STUDENTS_PASSWORD')
-    base_url = env.str('APP_BASE_URL')
+    base_url = env.str('FRONTEND_BASE_URL')
 
     link = '{0}{1}{2}/'.format(str(base_url), str(url), str(token))
 
