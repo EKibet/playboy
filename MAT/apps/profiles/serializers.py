@@ -20,8 +20,7 @@ class ProfileSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username', read_only=True)
     current_track = serializers.ChoiceField(choices=TRACK_CHOICES)
     image = serializers.URLField(required=True)
-    profile_picture = serializers.ImageField(
-        required=False, allow_empty_file=True)
+    profile_picture = serializers.ImageField(required=False, allow_empty_file=True)
 
     class Meta:
         model = StudentProfile

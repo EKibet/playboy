@@ -27,8 +27,7 @@ class StudentCurrentTrack(CommonFieldsMixin):
 
 class StudentProfile(CommonFieldsMixin):
     user = models.OneToOneField(Student, on_delete=models.CASCADE)
-    image = models.URLField(
-        blank=True, null=True, default='https://res.cloudinary.com/mat-api/image/upload/v1589887195/profilepic_ilcie7.png')
+    image = models.URLField(blank=True, null=True, default='https://res.cloudinary.com/mat-api/image/upload/v1589887195/profilepic_ilcie7.png')
     GENDER_CHOICES = (
         ('male', 'Male'),
         ('female', 'Female'),

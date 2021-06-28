@@ -39,13 +39,14 @@ def process_final_list(records,next_module=None,cc_list=None):
             'next_module':next_module,
             'reasons':row.get('Reason','')
             }   
-            if row['Final Recommendation'].lower() == 'yes' or row['Final Recommendation'] == 'pass':
+            # import pdb;pdb.set_trace()
+            if row['Final Recommendation'] == 'Pass':
                 pass_html_message = render_to_string('full_acceptance_email_template.html', dynamic_data)
                 mailing_list.append( ('Congratulations! Passing to Next Phase -Full Acceptance', '.', pass_html_message,from_email,[row['Email']],cc_list))
-            elif row['Final Recommendation'].lower()=='no' or row['Final Recommendation'].lower()=='failed':
+            elif row['Final Recommendation']=='Fail':
                 failed_html_message = render_to_string('not_passing_email_template.html', dynamic_data)
                 mailing_list.append( ('Not Passing to the Next Phase', '.', failed_html_message,from_email,[row['Email']],cc_list))            
-            elif row['Final Recommendation'].lower()=='probation' or row['Final Recommendation'].lower()=='pass on probation':
+            elif row['Final Recommendation']=='Pass on Probation':
                 probation_html_message = render_to_string('probation_email_template.html', dynamic_data)
                 mailing_list.append( ('Passing to Next Phase - Probation', '.', probation_html_message,from_email,[row['Email']],cc_list))            
 
@@ -105,10 +106,11 @@ def process_module_status_list(records,cc_list=None):
                 'scores':{ip_no.split('/')[0]:row[ip_no] for ip_no in ip_specifics.get('ips') },
                 'improvements':row.get('Reason','')
             }        
-            if row['Status'] == '' or row['Status'].lower() == 'on track':   
+            # import pdb;pdb.set_trace()
+            if row['Status'] == 'On track':
                 pass_html_message = render_to_string('on_track_template.html',dynamic_data)
                 mailing_list.append( ('A Quick status Update!', '.', pass_html_message,from_email,[row['Email']],cc_list))
-            elif row['Status'].lower()=='not on track':
+            elif row['Status'] =='Not on track':
                 not_on_track_html_message = render_to_string('not_on_track_template.html',dynamic_data )
                 mailing_list.append( ('A Quick status Update!', '.', not_on_track_html_message,from_email,[row['Email']],cc_list))         
 
@@ -144,9 +146,9 @@ class FinalListEmail(APIView):
             dataframe = pd.read_csv(io.StringIO(file_object.read().decode('utf-8')), delimiter=',')
             dataframe.dropna(axis='index',how='all',subset=['Email'],inplace=True)
             dataframe.dropna(axis='columns',how='all',inplace=True)
-            cohort_list = CohortMembership.objects.filter(cohort__id=int(request.data.get('cohort_id'))) 
-            cc_list=[cohort.user for cohort in cohort_list]
-            
+            # cohort_list = [CohortMembership.objects.filter(cohort__id=int(request.data.get('cohort_id'))) ]
+            # cc_list=[cohort.user for cohort in cohort_list]
+            cc_list = ['lawrence.karanja@moringaschool.com','peter.muturi@moringaschool.com','cynthia.kasambuli@moringaschool.com','starford.omwakwe@moringaschool.com','edgar.kibet@moringaschool.com' ]
             response=process_final_list(dataframe,request.data['next_module'],cc_list)               
         except TypeError as t_error:
             response={}
@@ -178,7 +180,8 @@ class StatusEmail(APIView):
             dataframe.dropna(axis='index',how='all',subset=['Email'],inplace=True)
             dataframe.dropna(axis='columns',how='all',inplace=True)
             cohort_list = CohortMembership.objects.filter(cohort__id=int(request.data.get('cohort_id'))) 
-            cc_list=[cohort.user for cohort in cohort_list]
+            cc_list = ['faith.thuita@moringaschool.com', 'edgar.kibet@moringaschool.com', 'gideon.maroko@moringaschool.com',
+                       'hamida.mstafa@moringaschool.com', 'kevin.munene@moringaschool.com', 'paul.gichuki@moringaschool.com', 'raphael.oduor@moringaschool.com', 'abdulfatah.mohamed@moringaschool.com']
             response=process_module_status_list(dataframe,cc_list)
         except TypeError as t_error:
             response={}
